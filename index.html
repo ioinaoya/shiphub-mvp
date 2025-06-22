@@ -21,12 +21,19 @@
             padding: 20px;
         }
 
+        .container {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
         .job-card {
             background: white;
             border-radius: 16px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             padding: 32px;
-            max-width: 400px;
             width: 100%;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -73,6 +80,64 @@
             font-size: 12px;
         }
 
+        .application-form {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            width: 100%;
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
         #apply-btn {
             width: 100%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -95,6 +160,12 @@
 
         #apply-btn:active {
             transform: translateY(0);
+        }
+
+        #apply-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .success-message {
@@ -129,42 +200,76 @@
             margin-top: 16px;
             font-weight: 500;
         }
+
+        .validation-error {
+            color: #f56565;
+            font-size: 14px;
+            margin-top: 4px;
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div class="job-card">
-        <h2 class="company">株式会社船造</h2>
-        <p class="position">造船技術者</p>
-        
-        <div class="job-details">
-            <div class="detail-item">
-                <div class="detail-icon">📍</div>
-                <span>東京都江東区</span>
-            </div>
-            <div class="detail-item">
-                <div class="detail-icon">💰</div>
-                <span>年収450万円〜650万円</span>
-            </div>
-            <div class="detail-item">
-                <div class="detail-icon">⏰</div>
-                <span>フルタイム</span>
-            </div>
-            <div class="detail-item">
-                <div class="detail-icon">🎯</div>
-                <span>CAD, 設計, 製造技術</span>
+    <div class="container">
+        <div class="job-card">
+            <h2 class="company">株式会社船造</h2>
+            <p class="position">造船技術者</p>
+            
+            <div class="job-details">
+                <div class="detail-item">
+                    <div class="detail-icon">📍</div>
+                    <span>東京都江東区</span>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-icon">💰</div>
+                    <span>年収450万円〜650万円</span>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-icon">⏰</div>
+                    <span>フルタイム</span>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-icon">🎯</div>
+                    <span>CAD, 設計, 製造技術</span>
+                </div>
             </div>
         </div>
 
-        <button id="apply-btn">応募する</button>
-        <div class="success-message" id="success-message">
-            応募が完了しました！Airtableに記録されました。
-        </div>
-        <div class="error-message" id="error-message">
-            エラーが発生しました。もう一度お試しください。
-        </div>
-        <div class="warning-message" id="warning-message">
-            CORSエラーのため、ローカル環境ではAirtableへの記録ができません。<br>
-            実際のサーバー環境でご利用ください。
+        <div class="application-form">
+            <h3 class="form-title">応募フォーム</h3>
+            
+            <form id="application-form">
+                <div class="form-group">
+                    <label for="name" class="form-label">お名前 *</label>
+                    <input type="text" id="name" name="name" class="form-input" required>
+                    <div class="validation-error" id="name-error">お名前を入力してください</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">メールアドレス *</label>
+                    <input type="email" id="email" name="email" class="form-input" required>
+                    <div class="validation-error" id="email-error">有効なメールアドレスを入力してください</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="message" class="form-label">自己紹介 *</label>
+                    <textarea id="message" name="message" class="form-textarea" placeholder="自己紹介や志望動機を入力してください" required></textarea>
+                    <div class="validation-error" id="message-error">自己紹介を入力してください</div>
+                </div>
+
+                <button type="submit" id="apply-btn">応募する</button>
+            </form>
+
+            <div class="success-message" id="success-message">
+                応募が完了しました！Airtableに記録されました。
+            </div>
+            <div class="error-message" id="error-message">
+                エラーが発生しました。もう一度お試しください。
+            </div>
+            <div class="warning-message" id="warning-message">
+                CORSエラーのため、ローカル環境ではAirtableへの記録ができません。<br>
+                実際のサーバー環境でご利用ください。
+            </div>
         </div>
     </div>
 
@@ -177,8 +282,44 @@
         // CORSエラーを回避するためのプロキシサーバー
         const PROXY_URL = 'https://cors-anywhere.herokuapp.com/';
 
+        // フォームバリデーション関数
+        function validateForm() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const message = document.getElementById('message').value.trim();
+            
+            let isValid = true;
+            
+            // 名前のバリデーション
+            if (!name) {
+                document.getElementById('name-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('name-error').style.display = 'none';
+            }
+            
+            // メールアドレスのバリデーション
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) {
+                document.getElementById('email-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('email-error').style.display = 'none';
+            }
+            
+            // 自己紹介のバリデーション
+            if (!message) {
+                document.getElementById('message-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('message-error').style.display = 'none';
+            }
+            
+            return isValid;
+        }
+
         // Airtableに応募履歴を記録する関数
-        async function recordApplication(companyName, position) {
+        async function recordApplication(companyName, position, name, email, message) {
             // まず直接APIを試す
             try {
                 console.log('直接APIを試行中...');
@@ -193,7 +334,10 @@
                             {
                                 fields: {
                                     '会社名': companyName,
-                                    '職種': position
+                                    '職種': position,
+                                    '名前': name,
+                                    'メールアドレス': email,
+                                    '自己紹介': message
                                 }
                             }
                         ]
@@ -229,7 +373,10 @@
                                     {
                                         fields: {
                                             '会社名': companyName,
-                                            '職種': position
+                                            '職種': position,
+                                            '名前': name,
+                                            'メールアドレス': email,
+                                            '自己紹介': message
                                         }
                                     }
                                 ]
@@ -261,21 +408,30 @@
             }
         }
 
-        // 応募ボタンのクリックイベント
-        document.getElementById('apply-btn').addEventListener('click', async function() {
+        // フォーム送信イベント
+        document.getElementById('application-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // フォームバリデーション
+            if (!validateForm()) {
+                return;
+            }
+            
             const successMessage = document.getElementById('success-message');
             const errorMessage = document.getElementById('error-message');
             const warningMessage = document.getElementById('warning-message');
             const applyBtn = document.getElementById('apply-btn');
             
-            // 会社名と職種を取得
+            // フォームデータを取得
             const companyName = document.querySelector('.company').textContent;
             const position = document.querySelector('.position').textContent;
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const message = document.getElementById('message').value.trim();
             
             // ボタンを無効化
             applyBtn.disabled = true;
             applyBtn.textContent = '応募中...';
-            applyBtn.style.opacity = '0.7';
             
             // メッセージを非表示
             successMessage.style.display = 'none';
@@ -284,19 +440,21 @@
             
             try {
                 // Airtableに応募履歴を記録
-                const success = await recordApplication(companyName, position);
+                const success = await recordApplication(companyName, position, name, email, message);
                 
                 if (success) {
                     // 成功時の処理
                     successMessage.style.display = 'block';
                     applyBtn.textContent = '応募完了';
                     applyBtn.style.background = '#48bb78';
+                    
+                    // フォームをリセット
+                    document.getElementById('application-form').reset();
                 } else {
                     // 失敗時の処理
                     errorMessage.style.display = 'block';
                     applyBtn.textContent = '応募する';
                     applyBtn.disabled = false;
-                    applyBtn.style.opacity = '1';
                 }
             } catch (error) {
                 console.error('応募処理エラー:', error);
@@ -307,21 +465,18 @@
                     warningMessage.style.display = 'block';
                     applyBtn.textContent = '応募する';
                     applyBtn.disabled = false;
-                    applyBtn.style.opacity = '1';
                 } else if (error.message === 'PROXY_ERROR') {
                     // プロキシエラーの場合
                     warningMessage.innerHTML = 'プロキシサーバーの制限により、一時的に利用できません。<br>しばらく時間をおいてから再試行してください。';
                     warningMessage.style.display = 'block';
                     applyBtn.textContent = '応募する';
                     applyBtn.disabled = false;
-                    applyBtn.style.opacity = '1';
                 } else {
                     // その他のエラーの場合
                     errorMessage.innerHTML = `エラーが発生しました: ${error.message}<br>もう一度お試しください。`;
                     errorMessage.style.display = 'block';
                     applyBtn.textContent = '応募する';
                     applyBtn.disabled = false;
-                    applyBtn.style.opacity = '1';
                 }
             }
         });
