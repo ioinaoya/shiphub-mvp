@@ -41,6 +41,51 @@ body {
     overflow-x: hidden;
 }
 
+/* ログイン高速化用ローディングアニメーション */
+.loading-dots {
+    display: inline-block;
+    position: relative;
+}
+
+.loading-dots::after {
+    content: '...';
+    animation: loading-dots 1.5s infinite;
+    position: absolute;
+    left: 100%;
+    top: 0;
+}
+
+@keyframes loading-dots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+}
+
+/* 高速ローディング状態のボタンスタイル */
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+button:disabled .loading-dots {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 成功状態の瞬間的フィードバック */
+.login-success {
+    background: #48bb78 !important;
+    color: white !important;
+    animation: success-pulse 0.3s ease-out;
+}
+
+@keyframes success-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
 /* Wave Background Animation */
 .wave-bg {
     background: var(--primary-gradient);
