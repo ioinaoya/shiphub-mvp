@@ -233,4 +233,12 @@ if (jobsList) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', displayJobs);
+document.addEventListener('DOMContentLoaded', function() {
+    // 求職者認証チェック
+    if (!requireAuth('求職者', 'user-login.html')) {
+        return;
+    }
+    
+    // 既存の機能実行
+    displayJobs();
+});

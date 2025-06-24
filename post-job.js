@@ -1,3 +1,11 @@
+// 企業認証チェック
+document.addEventListener('DOMContentLoaded', function() {
+    // 企業認証チェック
+    if (!requireAuth('企業', 'company-login.html')) {
+        return;
+    }
+});
+
 // Airtable設定
 const AIRTABLE_API_TOKEN = 'patV6se7KmGamuWT7.451356d3945a45135d354b363a2abd6d9c4d1ce9f74b0cdabee77f8dd055ddbb';
 const AIRTABLE_BASE_ID = 'appD06KJ0je7fo62a';

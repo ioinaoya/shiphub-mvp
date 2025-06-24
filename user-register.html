@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>求職者登録 - ShipHub | 海のキャリアを次のステージへ</title>
+    <link rel="stylesheet" href="premium-styles.css">
+    <style>
+        /* Page specific styles */
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .user-theme {
+            --accent-color: #10b981;
+            --secondary-color: #0ea5e9;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 32px;
+            gap: 8px;
+        }
+        
+        .step {
+            width: 40px;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            background: var(--accent-color);
+            transform: scaleX(1.2);
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .skill-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.05);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-checkbox:hover {
+            border-color: var(--accent-color);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .skill-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .skill-checkbox label {
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        .career-highlights {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        
+        .highlight-item {
+            padding: 16px;
+            background: rgba(14, 165, 233, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(14, 165, 233, 0.2);
+        }
+        
+        .highlight-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .highlight-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        .highlight-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body class="user-theme">
+    <div class="register-container wave-bg">
+        <!-- Floating Elements -->
+        <div class="floating-elements">
+            <div class="floating-ship" style="top: 15%; left: 85%;">⛵</div>
+            <div class="floating-ship" style="top: 70%; left: 15%;">🌊</div>
+            <div class="floating-ship" style="top: 40%; left: 95%;">🚤</div>
+            <div class="floating-ship" style="top: 85%; left: 25%;">⚓</div>
+            <div class="floating-ship" style="top: 25%; left: 5%;">🛥️</div>
+        </div>
+        
+        <div class="register-card glass-effect fade-in">
+            <!-- Brand Header -->
+            <div class="brand-header">
+                <div class="logo-container">
+                    <div class="logo-icon">🚢</div>
+                    <h1 class="brand-name">ShipHub</h1>
+                </div>
+                <h2 class="register-title">求職者アカウント作成</h2>
+                <p class="register-subtitle">海のキャリアを次のステージへ</p>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step active" id="step1"></div>
+                <div class="step" id="step2"></div>
+                <div class="step" id="step3"></div>
+            </div>
+
+            <!-- Error/Success Messages -->
+            <div id="messageContainer"></div>
+            
+            <!-- Registration Form -->
+            <form class="register-form" id="userRegisterForm">
+                <!-- Personal Information -->
+                <div class="form-section">
+                    <h3>基本情報</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group floating-label">
+                            <input type="text" id="lastName" placeholder=" " required>
+                            <label for="lastName">姓 *</label>
+                            <div class="field-icon">👤</div>
+                        </div>
+                        
+                        <div class="form-group floating-label">
+                            <input type="text" id="firstName" placeholder=" " required>
+                            <label for="firstName">名 *</label>
+                            <div class="field-icon">👤</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group floating-label">
+                        <input type="email" id="email" placeholder=" " required>
+                        <label for="email">メールアドレス *</label>
+                        <div class="field-icon">📧</div>
+                    </div>
+                    
+                    <div class="form-group floating-label">
+                        <input type="password" id="password" placeholder=" " required minlength="8">
+                        <label for="password">パスワード（8文字以上） *</label>
+                        <div class="field-icon">🔐</div>
+                    </div>
+                    
+                    <div class="form-group floating-label">
+                        <input type="password" id="confirmPassword" placeholder=" " required>
+                        <label for="confirmPassword">パスワード（確認） *</label>
+                        <div class="field-icon">🔐</div>
+                    </div>
+                    
+                    <div class="form-group floating-label">
+                        <input type="tel" id="phone" placeholder=" ">
+                        <label for="phone">電話番号</label>
+                        <div class="field-icon">📞</div>
+                    </div>
+                </div>
+
+                <!-- Career Highlights -->
+                <div class="career-highlights">
+                    <div class="highlight-item">
+                        <div class="highlight-icon">🚢</div>
+                        <div class="highlight-number">1,200+</div>
+                        <div class="highlight-label">求人案件</div>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="highlight-icon">🏢</div>
+                        <div class="highlight-number">500+</div>
+                        <div class="highlight-label">登録企業</div>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="highlight-icon">🎯</div>
+                        <div class="highlight-number">85%</div>
+                        <div class="highlight-label">マッチング率</div>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="premium-btn" id="submitBtn">
+                    <span class="btn-text">無料で登録する</span>
+                    <div class="btn-wave"></div>
+                </button>
+            </form>
+            
+            <!-- Alternative Actions -->
+            <div class="register-footer">
+                <p>すでにアカウントをお持ちですか？</p>
+                <a href="user-login.html" class="login-link">ログインはこちら</a>
+                <div style="margin-top: 16px;">
+                    <p>企業の採用担当者の方はこちら</p>
+                    <a href="company-register.html" class="register-link">企業として登録</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // Progress steps animation
+        function updateProgressSteps() {
+            const form = document.getElementById('userRegisterForm');
+            const sections = form.querySelectorAll('.form-section');
+            let completedSections = 0;
+            
+            sections.forEach((section, index) => {
+                const inputs = section.querySelectorAll('input[required], select[required]');
+                const filledInputs = Array.from(inputs).filter(input => input.value.trim() !== '');
+                
+                if (inputs.length > 0 && filledInputs.length === inputs.length) {
+                    completedSections++;
+                }
+            });
+            
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((step, index) => {
+                if (index < completedSections) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+
+        // Add event listeners to all fields
+        document.querySelectorAll('input, select, textarea').forEach(field => {
+            field.addEventListener('input', updateProgressSteps);
+            field.addEventListener('change', updateProgressSteps);
+        });
+
+        // Floating particles animation
+        function createFloatingParticles() {
+            const container = document.querySelector('.floating-elements');
+            const particles = ['🌊', '🐟', '🐠', '🦈', '⭐', '✨'];
+            
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = particles[Math.floor(Math.random() * particles.length)];
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Animate counter on scroll
+        function animateCounters() {
+            const counters = document.querySelectorAll('.highlight-number');
+            counters.forEach(counter => {
+                const target = counter.innerText;
+                const isPercentage = target.includes('%');
+                const targetNumber = parseInt(target.replace(/[^0-9]/g, ''));
+                const increment = targetNumber / 30;
+                let current = 0;
+                
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < targetNumber) {
+                        counter.innerText = Math.floor(current) + (isPercentage ? '%' : '+');
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+                
+                updateCounter();
+            });
+        }
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', () => {
+            createFloatingParticles();
+            updateProgressSteps();
+            setTimeout(animateCounters, 500);
+        });
+
+        // Form submission
+        document.getElementById('userRegisterForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const messageContainer = document.getElementById('messageContainer');
+            
+            // Clear previous messages
+            messageContainer.innerHTML = '';
+            
+            // Get form data - 簡素化された必要最小限のデータ
+            const formData = {
+                lastName: document.getElementById('lastName').value,
+                firstName: document.getElementById('firstName').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                confirmPassword: document.getElementById('confirmPassword').value,
+                phone: document.getElementById('phone').value
+            };
+            
+            // Validate passwords match
+            if (formData.password !== formData.confirmPassword) {
+                messageContainer.innerHTML = '<div class="error-message">パスワードが一致しません</div>';
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> 登録中...';
+            
+            try {
+                // Register user
+                await registerUser(formData);
+            } catch (error) {
+                messageContainer.innerHTML = `<div class="error-message">${error.message}</div>`;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span class="btn-text">無料で登録する</span><div class="btn-wave"></div>';
+            }
+        });
+    </script>
+</body>
+</html>

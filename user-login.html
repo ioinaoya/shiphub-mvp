@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>求職者ログイン - ShipHub | 海のキャリアを次のステージへ</title>
+    <link rel="stylesheet" href="premium-styles.css">
+    <style>
+        /* User specific styling */
+        .user-theme {
+            --accent-color: #10b981;
+            --secondary-color: #0ea5e9;
+        }
+        
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .career-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 24px 0;
+            padding: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 16px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        .premium-badge {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--accent-color);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .job-categories {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 24px 0;
+        }
+        
+        .category-item {
+            text-align: center;
+            padding: 12px;
+            background: rgba(14, 165, 233, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .category-item:hover {
+            background: rgba(14, 165, 233, 0.1);
+            transform: translateY(-2px);
+            border-color: var(--secondary-color);
+        }
+        
+        .category-icon {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .category-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        /* Ocean theme animations */
+        .ocean-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 Q300,0 600,30 T1200,30 L1200,60 L0,60 Z" fill="rgba(14,165,233,0.1)"/></svg>');
+            animation: oceanWave 10s linear infinite;
+        }
+        
+        @keyframes oceanWave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-600px); }
+        }
+        
+        .fish-animation {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            animation: swimAcross 20s linear infinite;
+        }
+        
+        @keyframes swimAcross {
+            0% {
+                right: -50px;
+                opacity: 0;
+            }
+            5% {
+                opacity: 0.4;
+            }
+            95% {
+                opacity: 0.4;
+            }
+            100% {
+                right: calc(100% + 50px);
+                opacity: 0;
+            }
+        }
+        
+        .demo-credentials {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        .demo-credentials h4 {
+            color: var(--accent-color);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .demo-credentials p {
+            margin: 4px 0;
+            color: var(--text-secondary);
+            font-family: monospace;
+        }
+        
+        .skills-showcase {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
+            padding: 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+        }
+        
+        .skills-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .skill-tag {
+            background: white;
+            color: var(--ocean-blue);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .skill-tag:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="user-theme">
+    <div class="login-container wave-bg">
+        <!-- Floating Elements -->
+        <div class="floating-elements">
+            <div class="floating-ship" style="top: 15%; left: 85%;">⛵</div>
+            <div class="floating-ship" style="top: 70%; left: 15%;">🌊</div>
+            <div class="floating-ship" style="top: 40%; left: 95%;">🚤</div>
+            <div class="floating-ship" style="top: 85%; left: 25%;">⚓</div>
+            <div class="floating-ship" style="top: 25%; left: 5%;">🛥️</div>
+        </div>
+        
+        <div class="login-card glass-effect fade-in">
+            <div class="premium-badge">求職者向け</div>
+            
+            <!-- Ocean wave animation -->
+            <div class="ocean-wave"></div>
+            
+            <!-- Fish animations -->
+            <div class="fish-animation" style="bottom: 20px; animation-delay: 0s;">🐟</div>
+            <div class="fish-animation" style="bottom: 40px; animation-delay: 5s;">🐠</div>
+            <div class="fish-animation" style="bottom: 30px; animation-delay: 10s;">🦈</div>
+            
+            <!-- Brand Header -->
+            <div class="brand-header">
+                <div class="logo-container">
+                    <div class="logo-icon">🚢</div>
+                    <h1 class="brand-name">ShipHub</h1>
+                </div>
+                <h2 class="login-title">求職者ログイン</h2>
+                <p class="login-subtitle">海のキャリアを次のステージへ</p>
+            </div>
+
+            <!-- Job Categories -->
+            <div class="job-categories">
+                <div class="category-item">
+                    <span class="category-icon">⚓</span>
+                    <span class="category-text">航海士</span>
+                </div>
+                <div class="category-item">
+                    <span class="category-icon">⚙️</span>
+                    <span class="category-text">機関士</span>
+                </div>
+                <div class="category-item">
+                    <span class="category-icon">🛳️</span>
+                    <span class="category-text">船長</span>
+                </div>
+            </div>
+
+            <!-- Career Stats -->
+            <div class="career-stats">
+                <div class="stat-item">
+                    <span class="stat-number">1,200+</span>
+                    <span class="stat-label">求人案件</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">85%</span>
+                    <span class="stat-label">内定率</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">24h</span>
+                    <span class="stat-label">平均返信</span>
+                </div>
+            </div>
+
+            <!-- Error/Success Messages -->
+            <div id="messageContainer"></div>
+            
+            <!-- Login Form -->
+            <form class="login-form" id="userLoginForm">
+                <div class="form-group floating-label">
+                    <input type="email" id="email" placeholder=" " required>
+                    <label for="email">メールアドレス</label>
+                    <div class="field-icon">📧</div>
+                </div>
+                
+                <div class="form-group floating-label">
+                    <input type="password" id="password" placeholder=" " required>
+                    <label for="password">パスワード</label>
+                    <div class="field-icon">🔐</div>
+                </div>
+                
+                <div class="remember-section">
+                    <label class="remember-checkbox">
+                        <input type="checkbox" id="remember">
+                        <span>ログイン状態を保持</span>
+                    </label>
+                    <a href="#" class="forgot-password">パスワードを忘れた方</a>
+                </div>
+                
+                <!-- Demo Credentials -->
+                <div class="demo-credentials">
+                    <h4>🔧 デモアカウント</h4>
+                    <p>メール: user@test.com</p>
+                    <p>パスワード: test456</p>
+                </div>
+                
+                <button type="submit" class="premium-btn" id="loginBtn">
+                    <span class="btn-text">ログイン</span>
+                    <div class="btn-wave"></div>
+                </button>
+            </form>
+
+            <!-- Skills Showcase -->
+            <div class="skills-showcase">
+                <p class="skills-title">人気の資格・スキル</p>
+                <div class="skill-tags">
+                    <span class="skill-tag">海技士</span>
+                    <span class="skill-tag">小型船舶</span>
+                    <span class="skill-tag">危険物取扱</span>
+                    <span class="skill-tag">潜水士</span>
+                    <span class="skill-tag">GMDSS</span>
+                </div>
+            </div>
+            
+            <div class="divider">
+                <span>まだアカウントをお持ちでない方</span>
+            </div>
+            
+            <!-- Register Button -->
+            <button type="button" class="secondary-btn" onclick="window.location.href='user-register.html'">
+                無料で求職者アカウントを作成
+            </button>
+            
+            <!-- Footer -->
+            <div class="login-footer">
+                <p>企業の採用担当者の方はこちら</p>
+                <a href="company-login.html" class="login-link">企業としてログイン</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // Floating particles animation
+        function createFloatingParticles() {
+            const container = document.querySelector('.floating-elements');
+            const particles = ['🌊', '🐟', '🐠', '🦈', '⭐', '✨'];
+            
+            for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = particles[Math.floor(Math.random() * particles.length)];
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Animate counters
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const target = counter.innerText;
+                const isPercentage = target.includes('%');
+                const hasPlus = target.includes('+');
+                const hasHour = target.includes('h');
+                const targetNumber = parseInt(target.replace(/[^0-9]/g, ''));
+                const increment = targetNumber / 50;
+                let current = 0;
+                
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < targetNumber) {
+                        let display = Math.floor(current);
+                        if (hasPlus) display += '+';
+                        if (isPercentage) display += '%';
+                        if (hasHour) display += 'h';
+                        counter.innerText = display;
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+                
+                updateCounter();
+            });
+        }
+
+        // Category hover effect
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-4px) scale(1.05)';
+            });
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(-2px) scale(1)';
+            });
+        });
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', () => {
+            createFloatingParticles();
+            setTimeout(animateCounters, 500);
+        });
+
+        // Form submission
+        document.getElementById('userLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const loginBtn = document.getElementById('loginBtn');
+            const messageContainer = document.getElementById('messageContainer');
+            
+            // Clear previous messages
+            messageContainer.innerHTML = '';
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="loading-spinner"></span> ログイン中...';
+            
+            try {
+                // Authenticate user
+                const result = await authenticateUser(email, password, '求職者');
+                
+                if (result.success) {
+                    messageContainer.innerHTML = '<div class="success-message">ログイン成功！リダイレクト中...</div>';
+                    setTimeout(() => {
+                        redirectAfterLogin('求職者');
+                    }, 1000);
+                } else {
+                    const errorMessage = handleAuthError(result.error);
+                    messageContainer.innerHTML = `<div class="error-message">${errorMessage}</div>`;
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<span class="btn-text">ログイン</span><div class="btn-wave"></div>';
+                }
+            } catch (error) {
+                messageContainer.innerHTML = '<div class="error-message">ログインエラーが発生しました</div>';
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span class="btn-text">ログイン</span><div class="btn-wave"></div>';
+            }
+        });
+
+        // Password visibility toggle
+        document.querySelector('input[type="password"]').addEventListener('focus', function() {
+            const icon = this.nextElementSibling.nextElementSibling;
+            icon.style.cursor = 'pointer';
+            icon.onclick = function() {
+                const input = document.getElementById('password');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.textContent = '🙈';
+                } else {
+                    input.type = 'password';
+                    this.textContent = '🔐';
+                }
+            };
+        });
+    </script>
+</body>
+</html>

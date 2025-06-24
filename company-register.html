@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企業登録 - ShipHub | 優秀な船舶人材との出会い</title>
+    <link rel="stylesheet" href="premium-styles.css">
+    <style>
+        /* Page specific styles */
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 100;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--gold-accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .divider span {
+            padding: 0 16px;
+        }
+        
+        .benefits-list {
+            display: grid;
+            gap: 12px;
+            margin: 24px 0;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(251, 191, 36, 0.05);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        .benefit-icon {
+            font-size: 20px;
+            color: var(--gold-accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container wave-bg">
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <!-- Floating Elements -->
+        <div class="floating-elements">
+            <div class="floating-ship" style="top: 10%; left: 80%;">🚢</div>
+            <div class="floating-ship" style="top: 60%; left: 10%;">⚓</div>
+            <div class="floating-ship" style="top: 30%; left: 90%;">🛳️</div>
+            <div class="floating-ship" style="top: 80%; left: 20%;">🌊</div>
+            <div class="floating-ship" style="top: 45%; left: 5%;">⛵</div>
+        </div>
+        
+        <div class="register-card glass-effect fade-in">
+            <!-- Brand Header -->
+            <div class="brand-header">
+                <div class="logo-container">
+                    <div class="logo-icon">🚢</div>
+                    <h1 class="brand-name">ShipHub</h1>
+                </div>
+                <h2 class="register-title">企業アカウント作成</h2>
+                <p class="register-subtitle">優秀な船舶人材との出会いを始めましょう</p>
+            </div>
+
+            <!-- Error/Success Messages -->
+            <div id="messageContainer"></div>
+            
+            <!-- Registration Form -->
+            <form class="register-form" id="companyRegisterForm">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h3>基本情報</h3>
+                    
+                    <div class="form-group floating-label">
+                        <input type="text" id="companyName" placeholder=" " required>
+                        <label for="companyName">企業名 *</label>
+                        <div class="field-icon">🏢</div>
+                    </div>
+                    
+                    <div class="form-group floating-label">
+                        <input type="email" id="email" placeholder=" " required>
+                        <label for="email">メールアドレス *</label>
+                        <div class="field-icon">📧</div>
+                    </div>
+                    
+                    <div class="form-group floating-label">
+                        <input type="password" id="password" placeholder=" " required minlength="8">
+                        <label for="password">パスワード（8文字以上） *</label>
+                        <div class="field-icon">🔐</div>
+                    </div>
+                    
+                    <div class="form-group floating-label">
+                        <input type="password" id="confirmPassword" placeholder=" " required>
+                        <label for="confirmPassword">パスワード（確認） *</label>
+                        <div class="field-icon">🔐</div>
+                    </div>
+                    
+                    <div class="form-group floating-label">
+                        <input type="tel" id="phone" placeholder=" ">
+                        <label for="phone">電話番号</label>
+                        <div class="field-icon">📞</div>
+                    </div>
+                </div>
+
+                <!-- Benefits Section -->
+                <div class="benefits-list">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✨</span>
+                        <span>無料で求人掲載が可能</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">🎯</span>
+                        <span>マッチング率の高い人材にリーチ</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">📊</span>
+                        <span>応募者管理機能で効率的な採用活動</span>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="premium-btn" id="submitBtn">
+                    <span class="btn-text">アカウントを作成</span>
+                    <div class="btn-wave"></div>
+                </button>
+            </form>
+            
+            <div class="divider">
+                <span>または</span>
+            </div>
+            
+            <!-- Alternative Login -->
+            <button type="button" class="secondary-btn" onclick="window.location.href='company-login.html'">
+                すでにアカウントをお持ちの方
+            </button>
+            
+            <!-- Footer -->
+            <div class="register-footer">
+                <p>求職者の方はこちら</p>
+                <a href="user-register.html" class="register-link">求職者として登録</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // Progress bar animation
+        function updateProgress() {
+            const form = document.getElementById('companyRegisterForm');
+            const inputs = form.querySelectorAll('input[required], select[required]');
+            const filledInputs = Array.from(inputs).filter(input => input.value.trim() !== '');
+            const progress = (filledInputs.length / inputs.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Add event listeners to all required fields
+        document.querySelectorAll('input[required], select[required]').forEach(field => {
+            field.addEventListener('input', updateProgress);
+            field.addEventListener('change', updateProgress);
+        });
+
+        // Floating particles animation
+        function createFloatingParticles() {
+            const container = document.querySelector('.floating-elements');
+            const particles = ['🌊', '⚓', '🚢', '🛳️', '⭐', '🌟'];
+            
+            for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = particles[Math.floor(Math.random() * particles.length)];
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', () => {
+            createFloatingParticles();
+            updateProgress();
+        });
+
+        // Form submission
+        document.getElementById('companyRegisterForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const messageContainer = document.getElementById('messageContainer');
+            
+            // Clear previous messages
+            messageContainer.innerHTML = '';
+            
+            // Get form data - 簡素化された必要最小限のデータ
+            const formData = {
+                companyName: document.getElementById('companyName').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                confirmPassword: document.getElementById('confirmPassword').value,
+                phone: document.getElementById('phone').value
+            };
+            
+            // Validate passwords match
+            if (formData.password !== formData.confirmPassword) {
+                messageContainer.innerHTML = '<div class="error-message">パスワードが一致しません</div>';
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> 登録中...';
+            
+            try {
+                // Register company
+                await registerCompany(formData);
+            } catch (error) {
+                messageContainer.innerHTML = `<div class="error-message">${error.message}</div>`;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span class="btn-text">アカウントを作成</span><div class="btn-wave"></div>';
+            }
+        });
+    </script>
+</body>
+</html>
