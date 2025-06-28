@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>企業ログイン - ShipHub</title>
-    <meta name="description" content="ShipHub企業ログインページ。海事業界専門の優秀な人材を採用しましょう。">
+    <title>求職者ログイン - ShipHub</title>
+    <meta name="description" content="ShipHub求職者ログインページ。海事業界専門の求人情報にアクセスしよう。">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,8 +22,8 @@
             font-family: 'Inter', 'Noto Sans JP', sans-serif;
         }
         
-        .navy-gradient {
-            background: linear-gradient(135deg, #102a43 0%, #243b53 50%, #334e68 100%);
+        .ocean-gradient {
+            background: linear-gradient(135deg, #005694 0%, #00a4ff 50%, #6dd3ff 100%);
         }
         
         .logo-circle {
@@ -45,17 +45,17 @@
         
         .input-field:focus {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(72, 101, 129, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 164, 255, 0.15);
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #486581 0%, #334e68 100%);
+            background: linear-gradient(135deg, #00a4ff 0%, #0083df 100%);
             transition: all 0.3s ease;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(72, 101, 129, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 164, 255, 0.3);
         }
     </style>
     
@@ -95,18 +95,18 @@
         }
     </script>
 </head>
-<body class="min-h-screen navy-gradient flex items-center justify-center p-4">
+<body class="min-h-screen ocean-gradient flex items-center justify-center p-4">
     <div class="form-container bg-white rounded-3xl shadow-2xl overflow-hidden">
         <!-- Header Section -->
         <div class="bg-white p-8 text-center">
             <div class="flex items-center justify-center space-x-3 mb-6">
-                <div class="w-12 h-12 bg-navy-100 rounded-full flex items-center justify-center">
+                <div class="w-12 h-12 bg-ocean-100 rounded-full flex items-center justify-center">
                     <img src="image0.jpeg" alt="ShipHub Logo" class="logo-circle">
                 </div>
                 <h1 class="text-2xl font-bold text-navy-900">ShipHub</h1>
             </div>
-            <h2 class="text-xl font-semibold text-navy-800 mb-2">企業ログイン</h2>
-            <p class="text-navy-600 text-sm">優秀な海事人材との出会いを</p>
+            <h2 class="text-xl font-semibold text-navy-800 mb-2">求職者ログイン</h2>
+            <p class="text-navy-600 text-sm">海事業界での新しいキャリアを始めましょう</p>
         </div>
         
         <!-- Login Form -->
@@ -122,8 +122,8 @@
                         id="email" 
                         name="email" 
                         required
-                        placeholder="company@example.com"
-                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy-500 focus:border-navy-500 outline-none"
+                        placeholder="your.email@example.com"
+                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 outline-none"
                     >
                 </div>
                 
@@ -139,7 +139,7 @@
                             name="password" 
                             required
                             placeholder="パスワードを入力"
-                            class="input-field w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy-500 focus:border-navy-500 outline-none"
+                            class="input-field w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 outline-none"
                         >
                         <button 
                             type="button" 
@@ -153,7 +153,7 @@
                 
                 <!-- Forgot Password Link -->
                 <div class="flex justify-end">
-                    <a href="#" class="text-sm text-navy-600 hover:text-navy-700 hover:underline">
+                    <a href="#" class="text-sm text-ocean-600 hover:text-ocean-700 hover:underline">
                         パスワードを忘れた方
                     </a>
                 </div>
@@ -182,8 +182,8 @@
                 <p class="text-navy-600 text-sm mb-4">
                     まだアカウントをお持ちでない方
                 </p>
-                <a href="company-register.html" class="text-navy-600 hover:text-navy-700 font-medium hover:underline">
-                    無料で企業登録
+                <a href="jobseeker-register.html" class="text-ocean-600 hover:text-ocean-700 font-medium hover:underline">
+                    無料で新規登録
                 </a>
             </div>
         </div>
@@ -191,7 +191,7 @@
         <!-- Footer -->
         <div class="bg-gray-50 px-8 py-4 text-center">
             <p class="text-xs text-gray-500">
-                ログインすることで、<a href="#" class="text-navy-600 hover:underline">利用規約</a>と<a href="#" class="text-navy-600 hover:underline">プライバシーポリシー</a>に同意したことになります。
+                ログインすることで、<a href="#" class="text-ocean-600 hover:underline">利用規約</a>と<a href="#" class="text-ocean-600 hover:underline">プライバシーポリシー</a>に同意したことになります。
             </p>
         </div>
     </div>

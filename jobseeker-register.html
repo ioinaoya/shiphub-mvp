@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>企業新規登録 - ShipHub</title>
-    <meta name="description" content="ShipHub企業新規登録ページ。海事業界専門の優秀な人材を採用しましょう。">
+    <title>求職者新規登録 - ShipHub</title>
+    <meta name="description" content="ShipHub求職者新規登録ページ。海事業界専門の求人情報にアクセスしましょう。">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,8 +22,8 @@
             font-family: 'Inter', 'Noto Sans JP', sans-serif;
         }
         
-        .navy-gradient {
-            background: linear-gradient(135deg, #102a43 0%, #243b53 50%, #334e68 100%);
+        .ocean-gradient {
+            background: linear-gradient(135deg, #005694 0%, #00a4ff 50%, #6dd3ff 100%);
         }
         
         .logo-icon {
@@ -44,17 +44,17 @@
         
         .input-field:focus {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(72, 101, 129, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 131, 223, 0.15);
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #486581 0%, #334e68 100%);
+            background: linear-gradient(135deg, #0083df 0%, #005694 100%);
             transition: all 0.3s ease;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(72, 101, 129, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 131, 223, 0.3);
         }
     </style>
     
@@ -94,35 +94,35 @@
         }
     </script>
 </head>
-<body class="min-h-screen navy-gradient flex items-center justify-center p-4">
+<body class="min-h-screen ocean-gradient flex items-center justify-center p-4">
     <div class="form-container bg-white rounded-3xl shadow-2xl overflow-hidden">
         <!-- Header Section -->
         <div class="bg-white p-8 text-center">
             <div class="flex items-center justify-center space-x-3 mb-6">
-                <div class="w-12 h-12 bg-navy-100 rounded-full flex items-center justify-center">
+                <div class="w-12 h-12 bg-ocean-100 rounded-full flex items-center justify-center">
                     <img src="image0.jpeg" alt="ShipHub Logo" class="logo-icon w-10 h-10">
                 </div>
-                <h1 class="text-2xl font-bold text-navy-900">ShipHub</h1>
+                <h1 class="text-2xl font-bold text-ocean-800">ShipHub</h1>
             </div>
-            <h2 class="text-xl font-semibold text-navy-800 mb-2">企業新規登録</h2>
-            <p class="text-navy-600 text-sm">優秀な海事人材との出会いを</p>
+            <h2 class="text-xl font-semibold text-navy-800 mb-2">求職者新規登録</h2>
+            <p class="text-navy-600 text-sm">海事業界でのキャリアを始めましょう</p>
         </div>
         
         <!-- Registration Form -->
         <div class="p-8 pt-0">
             <form id="register-form" class="space-y-6">
-                <!-- Company Name Field -->
+                <!-- Name Field -->
                 <div>
-                    <label for="company-name" class="block text-sm font-medium text-navy-700 mb-2">
-                        企業名
+                    <label for="name" class="block text-sm font-medium text-navy-700 mb-2">
+                        お名前
                     </label>
                     <input 
                         type="text" 
-                        id="company-name" 
-                        name="company-name" 
+                        id="name" 
+                        name="name" 
                         required
-                        placeholder="株式会社○○"
-                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy-500 focus:border-navy-500 outline-none"
+                        placeholder="山田 太郎"
+                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 outline-none"
                     >
                 </div>
                 
@@ -136,8 +136,8 @@
                         id="email" 
                         name="email" 
                         required
-                        placeholder="company@example.com"
-                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy-500 focus:border-navy-500 outline-none"
+                        placeholder="your@example.com"
+                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 outline-none"
                     >
                 </div>
                 
@@ -153,7 +153,7 @@
                             name="password" 
                             required
                             placeholder="8文字以上で入力"
-                            class="input-field w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy-500 focus:border-navy-500 outline-none"
+                            class="input-field w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 outline-none"
                         >
                         <button 
                             type="button" 
@@ -173,10 +173,10 @@
                         id="terms" 
                         name="terms" 
                         required
-                        class="mt-1 rounded border-gray-300 text-navy-600 focus:ring-navy-500"
+                        class="mt-1 rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
                     >
                     <label for="terms" class="text-sm text-navy-700">
-                        <a href="#" class="text-navy-600 hover:underline">利用規約</a>と<a href="#" class="text-navy-600 hover:underline">プライバシーポリシー</a>に同意します
+                        <a href="#" class="text-ocean-600 hover:underline">利用規約</a>と<a href="#" class="text-ocean-600 hover:underline">プライバシーポリシー</a>に同意します
                     </label>
                 </div>
                 
@@ -204,7 +204,7 @@
                 <p class="text-navy-600 text-sm mb-4">
                     すでにアカウントをお持ちの方
                 </p>
-                <a href="company-login.html" class="text-navy-600 hover:text-navy-700 font-medium hover:underline">
+                <a href="jobseeker-login.html" class="text-ocean-600 hover:text-ocean-700 font-medium hover:underline">
                     ログインはこちら
                 </a>
             </div>
@@ -213,7 +213,7 @@
         <!-- Footer -->
         <div class="bg-gray-50 px-8 py-4 text-center">
             <p class="text-xs text-gray-500">
-                登録することで、<a href="#" class="text-navy-600 hover:underline">利用規約</a>と<a href="#" class="text-navy-600 hover:underline">プライバシーポリシー</a>に同意したことになります。
+                登録することで、<a href="#" class="text-ocean-600 hover:underline">利用規約</a>と<a href="#" class="text-ocean-600 hover:underline">プライバシーポリシー</a>に同意したことになります。
             </p>
         </div>
     </div>
@@ -241,18 +241,18 @@
         // Airtable configuration
         const AIRTABLE_API_KEY = 'patZ8TUYsR4CpqmJD.44aca99e4b71c9f73e6e6e6e87c2a5bbfbddd5b97b96f1da624f3748c02dc8d3';
         const AIRTABLE_BASE_ID = 'app9x4vRYH6V1Yq6p';
-        const AIRTABLE_TABLE_NAME = 'Companies';
+        const AIRTABLE_TABLE_NAME = 'Users';
 
         // Form submission
         document.getElementById('register-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const companyName = document.getElementById('company-name').value;
+            const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const terms = document.getElementById('terms').checked;
             
-            if (!companyName || !email || !password) {
+            if (!name || !email || !password) {
                 alert('すべての必須項目を入力してください。');
                 return;
             }
@@ -283,10 +283,10 @@
                     },
                     body: JSON.stringify({
                         fields: {
-                            '企業名': companyName,
+                            '名前': name,
                             'メールアドレス': email,
                             'パスワード': password, // Note: In production, hash this password
-                            'ユーザータイプ': '企業',
+                            'ユーザータイプ': '求職者',
                             '登録日時': new Date().toISOString(),
                             'ステータス': '有効'
                         }
@@ -294,9 +294,9 @@
                 });
                 
                 if (response.ok) {
-                    alert('企業登録が完了しました！');
+                    alert('求職者登録が完了しました！');
                     // Redirect to login page or dashboard
-                    window.location.href = 'company-login.html';
+                    window.location.href = 'jobseeker-login.html';
                 } else {
                     const errorData = await response.json();
                     console.error('Airtable error:', errorData);
@@ -312,8 +312,8 @@
             }
         });
         
-        // Auto-focus on company name field
-        document.getElementById('company-name').focus();
+        // Auto-focus on name field
+        document.getElementById('name').focus();
     </script>
 </body>
 </html>

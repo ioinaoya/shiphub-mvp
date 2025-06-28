@@ -25,6 +25,7 @@
         
         body {
             font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            padding-top: 64px; /* Account for fixed header */
         }
         
         .animate-wave {
@@ -98,6 +99,168 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* Logo styles */
+        .logo-circle {
+            border-radius: 50%;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .logo-icon {
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            clip-path: circle(45% at 50% 50%);
+        }
+
+        .logo-icon-hero {
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            clip-path: circle(45% at 50% 50%);
+            filter: brightness(0) invert;
+        }
+
+        /* Header styles */
+        .header-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        /* Dropdown styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        /* Add invisible bridge to prevent menu from disappearing */
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: transparent;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #334e68;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f3f4f6;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.98);
+            z-index: 100;
+            padding: 80px 20px 20px;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        .hamburger {
+            display: none;
+            width: 30px;
+            height: 24px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .hamburger span {
+            display: block;
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            background: #334e68;
+            border-radius: 3px;
+            opacity: 1;
+            left: 0;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger span:nth-child(1) {
+            top: 0px;
+        }
+
+        .hamburger span:nth-child(2) {
+            top: 10px;
+        }
+
+        .hamburger span:nth-child(3) {
+            top: 20px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg);
+            top: 10px;
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg);
+            top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-desktop {
+                display: none;
+            }
+
+            .nav-buttons-desktop {
+                display: none;
+            }
+        }
+
     </style>
     
     <script>
@@ -137,6 +300,87 @@
     </script>
 </head>
 <body class="text-navy-800 antialiased">
+
+    <!-- Fixed Header -->
+    <header class="header-fixed">
+        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo Section -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                    <img src="image0.jpeg" alt="ShipHub Logo" class="logo-icon h-10 w-10">
+                    <span class="text-2xl font-bold text-ocean-800">ShipHub</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="nav-desktop hidden md:flex items-center space-x-6">
+                    <a href="pricing.html" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">料金プラン</a>
+                    <a href="faq.html" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">よくある質問</a>
+                    <a href="#service" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">サービス紹介</a>
+                    <a href="#for-company" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">企業の方へ</a>
+                    <a href="#for-jobseeker" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">求職者の方へ</a>
+                </nav>
+
+                <!-- Desktop Buttons -->
+                <div class="nav-buttons-desktop hidden md:flex items-center space-x-4">
+                    <!-- Register Dropdown -->
+                    <div class="dropdown">
+                        <button class="bg-ocean-600 text-white px-5 py-2 rounded-full font-medium hover:bg-ocean-700 transition-colors">
+                            新規登録
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="jobseeker-register.html">求職者として登録</a>
+                            <a href="company-register.html">企業として登録</a>
+                        </div>
+                    </div>
+
+                    <!-- Login Dropdown -->
+                    <div class="dropdown">
+                        <button class="bg-white text-ocean-600 px-5 py-2 rounded-full font-medium border-2 border-ocean-600 hover:bg-ocean-50 transition-colors">
+                            ログイン
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="jobseeker-login.html">求職者ログイン</a>
+                            <a href="company-login.html">企業ログイン</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="hamburger md:hidden" id="hamburger-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <nav class="space-y-4">
+            <a href="pricing.html" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">料金プラン</a>
+            <a href="faq.html" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">よくある質問</a>
+            <a href="#service" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200" onclick="closeMobileMenu()">サービス紹介</a>
+            <a href="#for-company" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200" onclick="closeMobileMenu()">企業の方へ</a>
+            <a href="#for-jobseeker" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200" onclick="closeMobileMenu()">求職者の方へ</a>
+            
+            <div class="pt-6 space-y-4">
+                <div class="pb-2">
+                    <p class="text-sm font-bold text-gray-600 mb-2">新規登録</p>
+                    <a href="jobseeker-register.html" class="block bg-ocean-600 text-white px-6 py-3 rounded-full font-medium text-center mb-2">求職者として登録</a>
+                    <a href="company-register.html" class="block bg-ocean-600 text-white px-6 py-3 rounded-full font-medium text-center">企業として登録</a>
+                </div>
+                
+                <div class="pb-2">
+                    <p class="text-sm font-bold text-gray-600 mb-2">ログイン</p>
+                    <a href="jobseeker-login.html" class="block bg-white text-ocean-600 px-6 py-3 rounded-full font-medium border-2 border-ocean-600 text-center mb-2">求職者ログイン</a>
+                    <a href="company-login.html" class="block bg-white text-ocean-600 px-6 py-3 rounded-full font-medium border-2 border-ocean-600 text-center">企業ログイン</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <main>
     <!-- Hero Section -->
     <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden ocean-gradient">
         <div class="wave-animation"></div>
@@ -149,17 +393,21 @@
                 </h1>
                 
                 <p class="text-xl md:text-2xl mb-12 text-ocean-100 max-w-3xl mx-auto">
-                    ShipHubは海事産業に特化した人材マッチングプラットフォーム。<br>
-                    造船、海運、港湾、機器メーカーの未来を共に創る仲間を見つけよう。
+                    海事業界に特化したマッチングプラットフォーム<br>
+                    造船、海運、港湾、機器メーカーの人材不足を解決します
                 </p>
                 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button class="bg-ocean-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-ocean-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                        無料で始める
-                    </button>
-                    <button class="bg-white text-ocean-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-ocean-50 transform hover:scale-105 transition-all duration-300 border-2 border-ocean-600">
-                        資料請求
-                    </button>
+                    <a href="jobseeker-register.html">
+                        <button class="bg-ocean-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-ocean-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                            求職者として始める
+                        </button>
+                    </a>
+                    <a href="company-register.html">
+                        <button class="bg-white text-ocean-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-ocean-50 transform hover:scale-105 transition-all duration-300 border-2 border-ocean-600">
+                            企業として始める
+                        </button>
+                    </a>
                 </div>
             </div>
             
@@ -174,56 +422,111 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-20 bg-gray-50">
+    <section id="service" class="py-20 bg-gray-50">
         <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 fade-in">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-navy-900">ShipHubの特徴</h2>
+                <h2 class="text-4xl font-bold text-navy-900 mb-4">なぜShipHubが選ばれるのか</h2>
                 <p class="text-xl text-navy-600 max-w-3xl mx-auto">
-                    海事産業に特化した機能で、理想のマッチングを実現します
+                    海事業界に特化した専門性と、最新のマッチング技術で、より良い出会いを実現します
                 </p>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-white rounded-2xl p-8 shadow-lg card-hover fade-in">
                     <div class="w-16 h-16 bg-ocean-100 rounded-2xl flex items-center justify-center mb-6">
                         <i data-lucide="ship" class="w-8 h-8 text-ocean-600"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3 text-navy-900">業界特化型マッチング</h3>
-                    <p class="text-navy-600 leading-relaxed">造船・海運・港湾・機器メーカーに特化した求人情報。専門性の高い職種にピンポイントでアプローチできます。</p>
+                    <h3 class="text-xl font-bold mb-3 text-navy-900">海事業界特化</h3>
+                    <p class="text-navy-600 leading-relaxed">造船、海運、港湾など海事業界の専門知識を活かした精密なマッチングを実現</p>
                 </div>
                 
                 <div class="bg-white rounded-2xl p-8 shadow-lg card-hover fade-in">
                     <div class="w-16 h-16 bg-ocean-100 rounded-2xl flex items-center justify-center mb-6">
                         <i data-lucide="users" class="w-8 h-8 text-ocean-600"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3 text-navy-900">AI駆動のスキルマッチング</h3>
-                    <p class="text-navy-600 leading-relaxed">独自のAIアルゴリズムが、あなたのスキルと企業のニーズを高精度でマッチング。ミスマッチを防ぎます。</p>
+                    <h3 class="text-xl font-bold mb-3 text-navy-900">高精度マッチング</h3>
+                    <p class="text-navy-600 leading-relaxed">AIを活用した高精度なマッチングシステムで、最適な人材と企業をつなげます</p>
                 </div>
                 
                 <div class="bg-white rounded-2xl p-8 shadow-lg card-hover fade-in">
                     <div class="w-16 h-16 bg-ocean-100 rounded-2xl flex items-center justify-center mb-6">
-                        <i data-lucide="map-pin" class="w-8 h-8 text-ocean-600"></i>
+                        <i data-lucide="shield-check" class="w-8 h-8 text-ocean-600"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3 text-navy-900">全国の求人情報を網羅</h3>
-                    <p class="text-navy-600 leading-relaxed">北海道から沖縄まで、全国の海事関連企業が参加。地域を超えた新しいキャリアの可能性を見つけられます。</p>
-                </div>
-                
-                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover fade-in">
-                    <div class="w-16 h-16 bg-ocean-100 rounded-2xl flex items-center justify-center mb-6">
-                        <i data-lucide="trending-up" class="w-8 h-8 text-ocean-600"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3 text-navy-900">キャリア成長支援</h3>
-                    <p class="text-navy-600 leading-relaxed">業界専門のキャリアアドバイザーが、あなたの成長をサポート。スキルアップセミナーも定期開催。</p>
+                    <h3 class="text-xl font-bold mb-3 text-navy-900">安心・安全</h3>
+                    <p class="text-navy-600 leading-relaxed">厳格な審査基準と充実したサポート体制で、安心してご利用いただけます</p>
                 </div>
             </div>
         </div>
     </section>
 
+
+    <!-- Process Section -->
+    <section id="process" class="py-20 bg-gray-50">
+        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-navy-900">ご利用の流れ</h2>
+                <p class="text-xl text-navy-600 max-w-3xl mx-auto">
+                    登録から入社まで、シンプルな4ステップ
+                </p>
+            </div>
+            
+            <div class="relative">
+                <div class="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-ocean-200 transform -translate-y-1/2 z-0"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
+                    <div class="text-center fade-in">
+                        <div class="bg-white rounded-full w-32 h-32 mx-auto mb-6 shadow-lg flex flex-col items-center justify-center relative">
+                            <span class="text-ocean-600 font-bold text-2xl mb-2">01</span>
+                            <i data-lucide="user-plus" class="w-10 h-10 text-ocean-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-navy-900">無料登録</h3>
+                        <p class="text-navy-600 max-w-xs mx-auto">簡単3分で登録完了。履歴書の作成もサポートします。</p>
+                    </div>
+                    
+                    <div class="text-center fade-in">
+                        <div class="bg-white rounded-full w-32 h-32 mx-auto mb-6 shadow-lg flex flex-col items-center justify-center relative">
+                            <span class="text-ocean-600 font-bold text-2xl mb-2">02</span>
+                            <i data-lucide="search" class="w-10 h-10 text-ocean-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-navy-900">求人検索・スカウト</h3>
+                        <p class="text-navy-600 max-w-xs mx-auto">AIがあなたに最適な求人をレコメンド。企業からのスカウトも届きます。</p>
+                    </div>
+                    
+                    <div class="text-center fade-in">
+                        <div class="bg-white rounded-full w-32 h-32 mx-auto mb-6 shadow-lg flex flex-col items-center justify-center relative">
+                            <span class="text-ocean-600 font-bold text-2xl mb-2">03</span>
+                            <i data-lucide="message-square" class="w-10 h-10 text-ocean-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-navy-900">企業とやり取り</h3>
+                        <p class="text-navy-600 max-w-xs mx-auto">チャット機能で気軽に質問。面接日程の調整もスムーズに。</p>
+                    </div>
+                    
+                    <div class="text-center fade-in">
+                        <div class="bg-white rounded-full w-32 h-32 mx-auto mb-6 shadow-lg flex flex-col items-center justify-center relative">
+                            <span class="text-ocean-600 font-bold text-2xl mb-2">04</span>
+                            <i data-lucide="handshake" class="w-10 h-10 text-ocean-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-navy-900">内定・入社</h3>
+                        <p class="text-navy-600 max-w-xs mx-auto">条件交渉から入社手続きまで、専任アドバイザーがサポート。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-12 fade-in">
+                <a href="jobseeker-register.html">
+                    <button class="bg-ocean-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-ocean-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        今すぐ無料で始める
+                    </button>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- Benefits Section -->
-    <section id="benefits" class="py-20 bg-white">
+    <section id="for-company" class="py-20 bg-white">
         <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                <div class="bg-gradient-to-br from-ocean-50 to-ocean-100 rounded-3xl p-10 fade-in">
+                <div id="for-jobseeker" class="bg-gradient-to-br from-ocean-50 to-ocean-100 rounded-3xl p-10 fade-in">
                     <div class="mb-8">
                         <h3 class="text-3xl font-bold text-navy-900 mb-4">求職者の方へ</h3>
                         <p class="text-lg text-navy-700">
@@ -252,7 +555,7 @@
                     </ul>
                     
                     <div class="mt-8">
-                        <a href="user-login.html">
+                        <a href="jobseeker-login.html">
                             <button class="bg-ocean-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-ocean-700 transform hover:scale-105 transition-all duration-300">
                                 求人を探す
                             </button>
@@ -299,230 +602,7 @@
             </div>
         </div>
     </section>
-
-    <!-- Process Section -->
-    <section id="process" class="py-20 bg-gray-50">
-        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 fade-in">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-navy-900">ご利用の流れ</h2>
-                <p class="text-xl text-navy-600 max-w-3xl mx-auto">
-                    登録から入社まで、シンプルな4ステップ
-                </p>
-            </div>
-
-            <div class="relative">
-                <div class="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-ocean-200 transform -translate-y-1/2 z-0"></div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
-                    <div class="text-center fade-in">
-                        <div class="bg-white rounded-full w-32 h-32 mx-auto mb-6 shadow-lg flex flex-col items-center justify-center relative">
-                            <span class="text-ocean-600 font-bold text-2xl mb-2">01</span>
-                            <i data-lucide="user-plus" class="w-10 h-10 text-ocean-600"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 text-navy-900">無料登録</h3>
-                        <p class="text-navy-600 max-w-xs mx-auto">簡単3分で登録完了。履歴書の作成もサポートします。</p>
-                    </div>
-                    
-                    <div class="text-center fade-in">
-                        <div class="bg-white rounded-full w-32 h-32 mx-auto mb-6 shadow-lg flex flex-col items-center justify-center relative">
-                            <span class="text-ocean-600 font-bold text-2xl mb-2">02</span>
-                            <i data-lucide="search" class="w-10 h-10 text-ocean-600"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 text-navy-900">求人検索・スカウト</h3>
-                        <p class="text-navy-600 max-w-xs mx-auto">AIがあなたに最適な求人をレコメンド。企業からのスカウトも届きます。</p>
-                    </div>
-                    
-                    <div class="text-center fade-in">
-                        <div class="bg-white rounded-full w-32 h-32 mx-auto mb-6 shadow-lg flex flex-col items-center justify-center relative">
-                            <span class="text-ocean-600 font-bold text-2xl mb-2">03</span>
-                            <i data-lucide="message-square" class="w-10 h-10 text-ocean-600"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 text-navy-900">企業とやり取り</h3>
-                        <p class="text-navy-600 max-w-xs mx-auto">チャット機能で気軽に質問。面接日程の調整もスムーズに。</p>
-                    </div>
-                    
-                    <div class="text-center fade-in">
-                        <div class="bg-white rounded-full w-32 h-32 mx-auto mb-6 shadow-lg flex flex-col items-center justify-center relative">
-                            <span class="text-ocean-600 font-bold text-2xl mb-2">04</span>
-                            <i data-lucide="handshake" class="w-10 h-10 text-ocean-600"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 text-navy-900">内定・入社</h3>
-                        <p class="text-navy-600 max-w-xs mx-auto">条件交渉から入社手続きまで、専任アドバイザーがサポート。</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-center mt-12 fade-in">
-                <button class="bg-ocean-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-ocean-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                    今すぐ無料で始める
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Results Section -->
-    <section id="results" class="py-20 ocean-gradient text-white">
-        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 fade-in">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4">実績で選ばれるShipHub</h2>
-                <p class="text-xl text-ocean-100 max-w-3xl mx-auto">
-                    多くの求職者と企業に信頼されている理由があります
-                </p>
-            </div>
-
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="text-center fade-in">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">
-                        <span class="counter" data-target="15000">0</span>+
-                    </div>
-                    <p class="text-ocean-100">登録求職者数</p>
-                </div>
-                
-                <div class="text-center fade-in">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">
-                        <span class="counter" data-target="800">0</span>+
-                    </div>
-                    <p class="text-ocean-100">掲載企業数</p>
-                </div>
-                
-                <div class="text-center fade-in">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">
-                        <span class="counter" data-target="95">0</span>%
-                    </div>
-                    <p class="text-ocean-100">マッチング成功率</p>
-                </div>
-                
-                <div class="text-center fade-in">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">
-                        4.8/5
-                    </div>
-                    <p class="text-ocean-100">利用者満足度</p>
-                </div>
-            </div>
-
-            <div class="mt-16 glass-effect rounded-3xl p-8 md:p-12 fade-in">
-                <h3 class="text-2xl font-bold mb-6 text-center">成功事例</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="text-center">
-                        <p class="text-lg mb-4">
-                            「地方の造船会社でしたが、ShipHubのおかげで首都圏からも優秀な人材を採用できました」
-                        </p>
-                        <p class="text-ocean-200">- A造船株式会社 人事部長</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-lg mb-4">
-                            「専門性を活かせる職場を見つけることができ、年収も150万円アップしました」
-                        </p>
-                        <p class="text-ocean-200">- 機関士 Bさん（30代）</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-lg mb-4">
-                            「採用コストが従来の1/3になり、マッチング精度も格段に向上しました」
-                        </p>
-                        <p class="text-ocean-200">- C海運会社 採用担当</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ Section -->
-    <section id="faq" class="py-20 bg-white">
-        <div class="container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 fade-in">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-navy-900">よくある質問</h2>
-                <p class="text-xl text-navy-600">ShipHubについてのご質問にお答えします</p>
-            </div>
-
-            <div class="space-y-4" id="faq-list">
-                <!-- FAQ items will be dynamically added here -->
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section id="cta" class="py-20 bg-gradient-to-br from-navy-900 to-navy-800">
-        <div class="container max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden fade-in">
-                <div class="grid grid-cols-1 lg:grid-cols-2">
-                    <div class="p-8 lg:p-12 bg-ocean-600 text-white">
-                        <h2 class="text-3xl md:text-4xl font-bold mb-6">
-                            海事産業の未来を<br>一緒に創りませんか？
-                        </h2>
-                        <p class="text-lg mb-8 text-ocean-100">
-                            ShipHubは、日本の海事産業の人材不足を解決し、業界の発展に貢献します。
-                            まずは無料でお試しください。
-                        </p>
-                        <div class="space-y-4">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 bg-ocean-500 rounded-full flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </div>
-                                <span>初期費用・月額費用0円</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 bg-ocean-500 rounded-full flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </div>
-                                <span>専任アドバイザーのサポート付き</span>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 bg-ocean-500 rounded-full flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </div>
-                                <span>最短1日で利用開始可能</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="p-8 lg:p-12">
-                        <h3 class="text-2xl font-bold mb-6 text-navy-900">お問い合わせ・資料請求</h3>
-                        <form id="contact-form" class="space-y-4">
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-navy-700 mb-1">
-                                    お名前 <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="name" name="name" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
-                            </div>
-                            
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-navy-700 mb-1">
-                                    メールアドレス <span class="text-red-500">*</span>
-                                </label>
-                                <input type="email" id="email" name="email" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
-                            </div>
-                            
-                            <div>
-                                <label for="company" class="block text-sm font-medium text-navy-700 mb-1">会社名</label>
-                                <input type="text" id="company" name="company"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
-                            </div>
-                            
-                            <div>
-                                <label for="message" class="block text-sm font-medium text-navy-700 mb-1">お問い合わせ内容</label>
-                                <textarea id="message" name="message" rows="4"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"></textarea>
-                            </div>
-                            
-                            <button type="submit"
-                                class="w-full bg-ocean-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-ocean-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2">
-                                <span>送信する</span>
-                                <i data-lucide="send" class="w-5 h-5"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    </main>
 
     <!-- Footer -->
     <footer class="bg-navy-950 text-white py-12">
@@ -530,7 +610,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                 <div>
                     <div class="flex items-center space-x-2 mb-4">
-                        <i data-lucide="ship" class="w-8 h-8 text-ocean-400"></i>
+                        <img src="image0.jpeg" alt="ShipHub Logo" class="h-8 w-8 logo-icon-hero">
                         <span class="text-2xl font-bold">ShipHub</span>
                     </div>
                     <p class="text-gray-400">
@@ -575,6 +655,145 @@
         </div>
     </footer>
 
+    <script>
+        // Scroll to section function
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(element => {
+            observer.observe(element);
+        });
+
+        // Counter animation
+        const counters = document.querySelectorAll('.counter');
+        
+        const counterObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const target = parseInt(counter.getAttribute('data-target'));
+                    animateCounter(counter, target);
+                    counterObserver.unobserve(counter);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        counters.forEach(counter => {
+            counterObserver.observe(counter);
+        });
+
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 100;
+            
+            const timer = setInterval(function() {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current);
+            }, 20);
+        }
+
+        // Mobile menu functionality
+        const hamburgerMenu = document.getElementById('hamburger-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        hamburgerMenu.addEventListener('click', function() {
+            hamburgerMenu.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        });
+
+        // Close mobile menu function
+        function closeMobileMenu() {
+            hamburgerMenu.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!hamburgerMenu.contains(e.target) && !mobileMenu.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+
+        // Enhanced dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            dropdowns.forEach(dropdown => {
+                const content = dropdown.querySelector('.dropdown-content');
+                let timeoutId;
+                
+                // Show dropdown on mouse enter
+                dropdown.addEventListener('mouseenter', function() {
+                    clearTimeout(timeoutId);
+                    content.style.display = 'block';
+                });
+                
+                // Hide dropdown on mouse leave with delay
+                dropdown.addEventListener('mouseleave', function() {
+                    timeoutId = setTimeout(() => {
+                        content.style.display = 'none';
+                    }, 100); // 100ms delay to allow cursor movement
+                });
+                
+                // Keep dropdown open when hovering over content
+                content.addEventListener('mouseenter', function() {
+                    clearTimeout(timeoutId);
+                });
+                
+                content.addEventListener('mouseleave', function() {
+                    timeoutId = setTimeout(() => {
+                        content.style.display = 'none';
+                    }, 100);
+                });
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a[href^="#"]');
+            if (link) {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    // Account for fixed header height
+                    const headerHeight = 80;
+                    const elementPosition = targetElement.offsetTop - headerHeight;
+                    window.scrollTo({
+                        top: elementPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    </script>
     
     <script src="app.js"></script>
 </body>

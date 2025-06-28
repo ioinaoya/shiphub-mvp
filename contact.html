@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お問い合わせ・資料請求 - ShipHub</title>
+    <meta name="description" content="ShipHubへのお問い合わせ・資料請求はこちらから。海事人材マッチングサービスについてのご質問にお答えします。">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            padding-top: 64px;
+        }
+        
+        .animate-wave {
+            animation: wave 3s ease-in-out infinite;
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-count-up {
+            animation: countUp 2s ease-out;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-30px); }
+        }
+        
+        @keyframes countUp {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ocean-gradient {
+            background: linear-gradient(135deg, #005694 0%, #00a4ff 50%, #6dd3ff 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .wave-animation {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url('data:image/svg+xml,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="rgba(255,255,255,0.1)" d="M0,160L48,170.7C96,181,192,203,288,192C384,181,480,139,576,128C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L0,320Z"></path></svg>') repeat-x;
+            animation: wave-move 20s linear infinite;
+        }
+        
+        @keyframes wave-move {
+            0% { background-position-x: 0; }
+            100% { background-position-x: 1440px; }
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Logo styles */
+        .logo-circle {
+            border-radius: 50%;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .logo-icon {
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            clip-path: circle(45% at 50% 50%);
+        }
+
+        .logo-icon-hero {
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            clip-path: circle(45% at 50% 50%);
+            filter: brightness(0) invert;
+        }
+
+        /* Header styles */
+        .header-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        /* Dropdown styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        /* Add invisible bridge to prevent menu from disappearing */
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: transparent;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #334e68;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f3f4f6;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.98);
+            z-index: 100;
+            padding: 80px 20px 20px;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        .hamburger {
+            display: none;
+            width: 30px;
+            height: 24px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .hamburger span {
+            display: block;
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            background: #334e68;
+            border-radius: 3px;
+            opacity: 1;
+            left: 0;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger span:nth-child(1) {
+            top: 0px;
+        }
+
+        .hamburger span:nth-child(2) {
+            top: 10px;
+        }
+
+        .hamburger span:nth-child(3) {
+            top: 20px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg);
+            top: 10px;
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg);
+            top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-desktop {
+                display: none;
+            }
+
+            .nav-buttons-desktop {
+                display: none;
+            }
+        }
+    </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ocean: {
+                            50: '#eef8ff',
+                            100: '#dcf1ff',
+                            200: '#b2e5ff',
+                            300: '#6dd3ff',
+                            400: '#20bdff',
+                            500: '#00a4ff',
+                            600: '#0083df',
+                            700: '#0068b4',
+                            800: '#005694',
+                            900: '#00497a',
+                        },
+                        navy: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            200: '#bcccdc',
+                            300: '#9fb3c8',
+                            400: '#829ab1',
+                            500: '#627d98',
+                            600: '#486581',
+                            700: '#334e68',
+                            800: '#243b53',
+                            900: '#102a43',
+                            950: '#0a1929',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="text-navy-800 antialiased">
+    <!-- Fixed Header -->
+    <header class="header-fixed">
+        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo Section -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.href='LP.html'">
+                    <img src="image0.jpeg" alt="ShipHub Logo" class="logo-icon h-10 w-10">
+                    <span class="text-2xl font-bold text-ocean-800">ShipHub</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="nav-desktop hidden md:flex items-center space-x-6">
+                    <a href="pricing.html" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">料金プラン</a>
+                    <a href="faq.html" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">よくある質問</a>
+                    <a href="LP.html#service" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">サービス紹介</a>
+                    <a href="LP.html#cases" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">導入事例</a>
+                    <a href="LP.html#for-company" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">企業の方へ</a>
+                    <a href="LP.html#for-jobseeker" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">求職者の方へ</a>
+                </nav>
+
+                <!-- Desktop Buttons -->
+                <div class="nav-buttons-desktop hidden md:flex items-center space-x-4">
+                    <!-- Register Dropdown -->
+                    <div class="dropdown">
+                        <button class="bg-ocean-600 text-white px-5 py-2 rounded-full font-medium hover:bg-ocean-700 transition-colors">
+                            新規登録
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="login.html?type=jobseeker&mode=register">求職者として登録</a>
+                            <a href="login.html?type=company&mode=register">企業として登録</a>
+                        </div>
+                    </div>
+
+                    <!-- Login Dropdown -->
+                    <div class="dropdown">
+                        <button class="bg-white text-ocean-600 px-5 py-2 rounded-full font-medium border-2 border-ocean-600 hover:bg-ocean-50 transition-colors">
+                            ログイン
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="login.html?type=jobseeker">求職者ログイン</a>
+                            <a href="login.html?type=company">企業ログイン</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="hamburger md:hidden" id="hamburger-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <nav class="space-y-4">
+            <a href="pricing.html" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">料金プラン</a>
+            <a href="faq.html" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">よくある質問</a>
+            <a href="LP.html#service" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">サービス紹介</a>
+            <a href="LP.html#cases" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">導入事例</a>
+            <a href="LP.html#for-company" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">企業の方へ</a>
+            <a href="LP.html#for-jobseeker" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">求職者の方へ</a>
+            
+            <div class="pt-6 space-y-4">
+                <div class="pb-2">
+                    <p class="text-sm font-bold text-gray-600 mb-2">新規登録</p>
+                    <a href="login.html?type=jobseeker&mode=register" class="block bg-ocean-600 text-white px-6 py-3 rounded-full font-medium text-center mb-2">求職者として登録</a>
+                    <a href="login.html?type=company&mode=register" class="block bg-ocean-600 text-white px-6 py-3 rounded-full font-medium text-center">企業として登録</a>
+                </div>
+                
+                <div class="pb-2">
+                    <p class="text-sm font-bold text-gray-600 mb-2">ログイン</p>
+                    <a href="login.html?type=jobseeker" class="block bg-white text-ocean-600 px-6 py-3 rounded-full font-medium border-2 border-ocean-600 text-center mb-2">求職者ログイン</a>
+                    <a href="login.html?type=company" class="block bg-white text-ocean-600 px-6 py-3 rounded-full font-medium border-2 border-ocean-600 text-center">企業ログイン</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[60vh] flex items-center justify-center overflow-hidden ocean-gradient">
+        <div class="wave-animation"></div>
+        
+        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center text-white fade-in visible">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">お問い合わせ・資料請求</h1>
+                <p class="text-xl md:text-2xl mb-12 text-ocean-100 max-w-3xl mx-auto">
+                    ShipHubについてのご質問や<br>サービス資料のご請求はこちらから
+                </p>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent"></div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover fade-in">
+                    <h2 class="text-2xl font-bold mb-6 text-navy-900">お問い合わせフォーム</h2>
+                    <form id="contact-form" class="space-y-6">
+                        <div>
+                            <label for="inquiry-type" class="block text-sm font-medium text-navy-700 mb-2">
+                                お問い合わせ種別 <span class="text-red-500">*</span>
+                            </label>
+                            <select id="inquiry-type" name="inquiry-type" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
+                                <option value="">選択してください</option>
+                                <option value="service">サービスについて</option>
+                                <option value="pricing">料金について</option>
+                                <option value="document">資料請求</option>
+                                <option value="demo">デモンストレーション</option>
+                                <option value="other">その他</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="user-type" class="block text-sm font-medium text-navy-700 mb-2">
+                                ご利用予定 <span class="text-red-500">*</span>
+                            </label>
+                            <select id="user-type" name="user-type" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
+                                <option value="">選択してください</option>
+                                <option value="company">企業として利用</option>
+                                <option value="job-seeker">求職者として利用</option>
+                                <option value="both">両方</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-navy-700 mb-2">
+                                お名前 <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="name" name="name" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-navy-700 mb-2">
+                                メールアドレス <span class="text-red-500">*</span>
+                            </label>
+                            <input type="email" id="email" name="email" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
+                        </div>
+
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-navy-700 mb-2">電話番号</label>
+                            <input type="tel" id="phone" name="phone"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
+                        </div>
+                        
+                        <div>
+                            <label for="company" class="block text-sm font-medium text-navy-700 mb-2">会社名・団体名</label>
+                            <input type="text" id="company" name="company"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
+                        </div>
+
+                        <div>
+                            <label for="position" class="block text-sm font-medium text-navy-700 mb-2">ご所属・役職</label>
+                            <input type="text" id="position" name="position"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
+                        </div>
+
+                        <div>
+                            <label for="company-size" class="block text-sm font-medium text-navy-700 mb-2">従業員数（企業の方のみ）</label>
+                            <select id="company-size" name="company-size"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
+                                <option value="">選択してください</option>
+                                <option value="1-10">1-10名</option>
+                                <option value="11-50">11-50名</option>
+                                <option value="51-200">51-200名</option>
+                                <option value="201+">201名以上</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-navy-700 mb-2">
+                                お問い合わせ内容 <span class="text-red-500">*</span>
+                            </label>
+                            <textarea id="message" name="message" rows="5" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+                                placeholder="具体的なご質問やご要望をお聞かせください"></textarea>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="privacy" name="privacy" required
+                                class="mt-1 mr-3 rounded border-gray-300 text-ocean-600 focus:ring-ocean-500">
+                            <label for="privacy" class="text-sm text-navy-700">
+                                <a href="#" class="text-ocean-600 hover:underline">プライバシーポリシー</a>に同意します <span class="text-red-500">*</span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit"
+                            class="w-full bg-ocean-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-ocean-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2">
+                            <span>送信する</span>
+                            <i data-lucide="send" class="w-5 h-5"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="space-y-8 fade-in">
+                    <!-- Service Overview -->
+                    <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                        <h3 class="text-xl font-bold mb-4 text-navy-900 flex items-center">
+                            <i data-lucide="info" class="w-6 h-6 text-ocean-600 mr-2"></i>
+                            サービス概要
+                        </h3>
+                        <p class="text-navy-700 mb-4">
+                            ShipHubは海事産業に特化した人材マッチングプラットフォームです。
+                            造船、海運、港湾、船舶機器メーカーの人材課題を解決します。
+                        </p>
+                        <ul class="space-y-2 text-navy-600">
+                            <li class="flex items-center">
+                                <i data-lucide="check" class="w-4 h-4 text-ocean-600 mr-2"></i>
+                                求職者は完全無料
+                            </li>
+                            <li class="flex items-center">
+                                <i data-lucide="check" class="w-4 h-4 text-ocean-600 mr-2"></i>
+                                企業は月額10,000円〜
+                            </li>
+                            <li class="flex items-center">
+                                <i data-lucide="check" class="w-4 h-4 text-ocean-600 mr-2"></i>
+                                AIによる高精度マッチング
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                        <h3 class="text-xl font-bold mb-4 text-navy-900 flex items-center">
+                            <i data-lucide="phone" class="w-6 h-6 text-ocean-600 mr-2"></i>
+                            その他のお問い合わせ方法
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="font-semibold text-navy-900">お電話でのお問い合わせ</p>
+                                <p class="text-navy-700">03-XXXX-XXXX</p>
+                                <p class="text-sm text-navy-600">受付時間：平日 9:00-18:00</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-navy-900">メールでのお問い合わせ</p>
+                                <p class="text-navy-700">info@shiphub.jp</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Response Time -->
+                    <div class="bg-gradient-to-br from-ocean-50 to-ocean-100 rounded-2xl p-8 card-hover">
+                        <h3 class="text-xl font-bold mb-4 text-navy-900 flex items-center">
+                            <i data-lucide="clock" class="w-6 h-6 text-ocean-600 mr-2"></i>
+                            回答時間について
+                        </h3>
+                        <p class="text-navy-700">
+                            お問い合わせいただいた内容については、原則として2営業日以内にご回答いたします。
+                            お急ぎの場合は、お電話でのお問い合わせをお勧めします。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-navy-950 text-white py-12">
+        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i data-lucide="ship" class="w-8 h-8 text-ocean-400"></i>
+                        <span class="text-2xl font-bold">ShipHub</span>
+                    </div>
+                    <p class="text-gray-400">
+                        海事人材に特化した<br>マッチングプラットフォーム
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">サービス</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">求人検索</a></li>
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">企業向けサービス</a></li>
+                        <li><a href="pricing.html" class="hover:text-ocean-400 transition-colors">料金プラン</a></li>
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">成功事例</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">サポート</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">ヘルプセンター</a></li>
+                        <li><a href="contact.html" class="hover:text-ocean-400 transition-colors">お問い合わせ</a></li>
+                        <li><a href="faq.html" class="hover:text-ocean-400 transition-colors">よくある質問</a></li>
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">利用規約</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">会社情報</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">会社概要</a></li>
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">採用情報</a></li>
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">プレスリリース</a></li>
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">プライバシーポリシー</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 ShipHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Mobile menu functionality
+        const hamburgerMenu = document.getElementById('hamburger-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (hamburgerMenu && mobileMenu) {
+            hamburgerMenu.addEventListener('click', function() {
+                hamburgerMenu.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!hamburgerMenu.contains(e.target) && !mobileMenu.contains(e.target)) {
+                    hamburgerMenu.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+
+        // Enhanced dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            dropdowns.forEach(dropdown => {
+                const content = dropdown.querySelector('.dropdown-content');
+                let timeoutId;
+                
+                // Show dropdown on mouse enter
+                dropdown.addEventListener('mouseenter', function() {
+                    clearTimeout(timeoutId);
+                    content.style.display = 'block';
+                });
+                
+                // Hide dropdown on mouse leave with delay
+                dropdown.addEventListener('mouseleave', function() {
+                    timeoutId = setTimeout(() => {
+                        content.style.display = 'none';
+                    }, 100); // 100ms delay to allow cursor movement
+                });
+                
+                // Keep dropdown open when hovering over content
+                content.addEventListener('mouseenter', function() {
+                    clearTimeout(timeoutId);
+                });
+                
+                content.addEventListener('mouseleave', function() {
+                    timeoutId = setTimeout(() => {
+                        content.style.display = 'none';
+                    }, 100);
+                });
+            });
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(element => {
+            observer.observe(element);
+        });
+
+        // Airtable configuration
+        const AIRTABLE_API_KEY = 'patZ8TUYsR4CpqmJD.44aca99e4b71c9f73e6e6e6e87c2a5bbfbddd5b97b96f1da624f3748c02dc8d3';
+        const AIRTABLE_BASE_ID = 'app9x4vRYH6V1Yq6p';
+        const AIRTABLE_TABLE_NAME = 'Contacts';
+
+        // Form submission handling
+        document.getElementById('contact-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(e.target);
+            const inquiryType = formData.get('inquiry-type');
+            const userType = formData.get('user-type');
+            const name = formData.get('name');
+            const email = formData.get('email');
+            const phone = formData.get('phone');
+            const company = formData.get('company');
+            const position = formData.get('position');
+            const companySize = formData.get('company-size');
+            const message = formData.get('message');
+            const privacy = formData.get('privacy');
+            
+            // Validate required fields
+            if (!inquiryType || !userType || !name || !email || !message || !privacy) {
+                alert('必須項目をすべて入力してください。');
+                return;
+            }
+            
+            // Show loading state
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = '送信中...';
+            submitButton.disabled = true;
+            
+            try {
+                // Submit to Airtable
+                const response = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fields: {
+                            'お問い合わせ種別': inquiryType,
+                            'ご利用予定': userType,
+                            'お名前': name,
+                            'メールアドレス': email,
+                            '電話番号': phone || '',
+                            '会社名・団体名': company || '',
+                            'ご所属・役職': position || '',
+                            '従業員数': companySize || '',
+                            'お問い合わせ内容': message,
+                            '送信日時': new Date().toISOString(),
+                            'ステータス': '未対応'
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('お問い合わせありがとうございます。2営業日以内にご回答いたします。');
+                    // Reset form
+                    e.target.reset();
+                } else {
+                    const errorData = await response.json();
+                    console.error('Airtable error:', errorData);
+                    alert('送信に失敗しました。もう一度お試しください。');
+                }
+            } catch (error) {
+                console.error('Contact form error:', error);
+                alert('送信に失敗しました。インターネット接続を確認してもう一度お試しください。');
+            } finally {
+                // Reset button state
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

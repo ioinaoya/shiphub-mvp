@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>料金プラン - ShipHub</title>
+    <meta name="description" content="ShipHubの料金プラン。企業規模に応じた最適なプランをご用意。初期費用0円で始められます。">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            padding-top: 64px;
+        }
+        
+        .animate-wave {
+            animation: wave 3s ease-in-out infinite;
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-count-up {
+            animation: countUp 2s ease-out;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-30px); }
+        }
+        
+        @keyframes countUp {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ocean-gradient {
+            background: linear-gradient(135deg, #005694 0%, #00a4ff 50%, #6dd3ff 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .wave-animation {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url('data:image/svg+xml,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="rgba(255,255,255,0.1)" d="M0,160L48,170.7C96,181,192,203,288,192C384,181,480,139,576,128C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L0,320Z"></path></svg>') repeat-x;
+            animation: wave-move 20s linear infinite;
+        }
+        
+        @keyframes wave-move {
+            0% { background-position-x: 0; }
+            100% { background-position-x: 1440px; }
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .company-size-btn {
+            @apply bg-white rounded-xl p-6 text-center hover:shadow-lg transition-all duration-300 border-2 border-gray-200 hover:border-ocean-500 cursor-pointer;
+        }
+        
+        .company-size-btn.active {
+            @apply border-ocean-500 bg-ocean-50;
+        }
+        
+        .company-size-btn i {
+            @apply text-ocean-600 mx-auto;
+        }
+        
+        #plan-details {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Logo styles */
+        .logo-circle {
+            border-radius: 50%;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .logo-icon {
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            clip-path: circle(45% at 50% 50%);
+        }
+
+        .logo-icon-hero {
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            clip-path: circle(45% at 50% 50%);
+            filter: brightness(0) invert;
+        }
+
+        /* Header styles */
+        .header-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        /* Dropdown styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        /* Add invisible bridge to prevent menu from disappearing */
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: transparent;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #334e68;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f3f4f6;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.98);
+            z-index: 100;
+            padding: 80px 20px 20px;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        .hamburger {
+            display: none;
+            width: 30px;
+            height: 24px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .hamburger span {
+            display: block;
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            background: #334e68;
+            border-radius: 3px;
+            opacity: 1;
+            left: 0;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger span:nth-child(1) {
+            top: 0px;
+        }
+
+        .hamburger span:nth-child(2) {
+            top: 10px;
+        }
+
+        .hamburger span:nth-child(3) {
+            top: 20px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg);
+            top: 10px;
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg);
+            top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-desktop {
+                display: none;
+            }
+
+            .nav-buttons-desktop {
+                display: none;
+            }
+        }
+    </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ocean: {
+                            50: '#eef8ff',
+                            100: '#dcf1ff',
+                            200: '#b2e5ff',
+                            300: '#6dd3ff',
+                            400: '#20bdff',
+                            500: '#00a4ff',
+                            600: '#0083df',
+                            700: '#0068b4',
+                            800: '#005694',
+                            900: '#00497a',
+                        },
+                        navy: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            200: '#bcccdc',
+                            300: '#9fb3c8',
+                            400: '#829ab1',
+                            500: '#627d98',
+                            600: '#486581',
+                            700: '#334e68',
+                            800: '#243b53',
+                            900: '#102a43',
+                            950: '#0a1929',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="text-navy-800 antialiased">
+    <!-- Fixed Header -->
+    <header class="header-fixed">
+        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo Section -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.href='LP.html'">
+                    <img src="image0.jpeg" alt="ShipHub Logo" class="logo-icon h-10 w-10">
+                    <span class="text-2xl font-bold text-ocean-800">ShipHub</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="nav-desktop hidden md:flex items-center space-x-6">
+                    <a href="pricing.html" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">料金プラン</a>
+                    <a href="faq.html" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">よくある質問</a>
+                    <a href="LP.html#service" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">サービス紹介</a>
+                    <a href="LP.html#for-company" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">企業の方へ</a>
+                    <a href="LP.html#for-jobseeker" class="text-navy-700 hover:text-ocean-600 font-medium transition-colors">求職者の方へ</a>
+                </nav>
+
+                <!-- Desktop Buttons -->
+                <div class="nav-buttons-desktop hidden md:flex items-center space-x-4">
+                    <!-- Register Dropdown -->
+                    <div class="dropdown">
+                        <button class="bg-ocean-600 text-white px-5 py-2 rounded-full font-medium hover:bg-ocean-700 transition-colors">
+                            新規登録
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="login.html?type=jobseeker&mode=register">求職者として登録</a>
+                            <a href="login.html?type=company&mode=register">企業として登録</a>
+                        </div>
+                    </div>
+
+                    <!-- Login Dropdown -->
+                    <div class="dropdown">
+                        <button class="bg-white text-ocean-600 px-5 py-2 rounded-full font-medium border-2 border-ocean-600 hover:bg-ocean-50 transition-colors">
+                            ログイン
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="login.html?type=jobseeker">求職者ログイン</a>
+                            <a href="login.html?type=company">企業ログイン</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="hamburger md:hidden" id="hamburger-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <nav class="space-y-4">
+            <a href="pricing.html" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">料金プラン</a>
+            <a href="faq.html" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">よくある質問</a>
+            <a href="LP.html#service" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">サービス紹介</a>
+            <a href="LP.html#for-company" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">企業の方へ</a>
+            <a href="LP.html#for-jobseeker" class="block text-lg font-medium text-navy-700 py-2 border-b border-gray-200">求職者の方へ</a>
+            
+            <div class="pt-6 space-y-4">
+                <div class="pb-2">
+                    <p class="text-sm font-bold text-gray-600 mb-2">新規登録</p>
+                    <a href="login.html?type=jobseeker&mode=register" class="block bg-ocean-600 text-white px-6 py-3 rounded-full font-medium text-center mb-2">求職者として登録</a>
+                    <a href="login.html?type=company&mode=register" class="block bg-ocean-600 text-white px-6 py-3 rounded-full font-medium text-center">企業として登録</a>
+                </div>
+                
+                <div class="pb-2">
+                    <p class="text-sm font-bold text-gray-600 mb-2">ログイン</p>
+                    <a href="login.html?type=jobseeker" class="block bg-white text-ocean-600 px-6 py-3 rounded-full font-medium border-2 border-ocean-600 text-center mb-2">求職者ログイン</a>
+                    <a href="login.html?type=company" class="block bg-white text-ocean-600 px-6 py-3 rounded-full font-medium border-2 border-ocean-600 text-center">企業ログイン</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[60vh] flex items-center justify-center overflow-hidden ocean-gradient">
+        <div class="wave-animation"></div>
+        
+        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center text-white fade-in visible">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">料金プラン</h1>
+                <p class="text-xl md:text-2xl mb-12 text-ocean-100 max-w-3xl mx-auto">
+                    企業規模に応じた最適なプランをご用意。<br>初期費用0円で始められます。
+                </p>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent"></div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- 求職者向け無料プラン -->
+            <div class="mb-16">
+                <div class="text-center mb-8 fade-in">
+                    <h2 class="text-3xl font-bold text-navy-900 mb-2">求職者の方</h2>
+                    <p class="text-lg text-navy-600">すべての機能が完全無料でご利用いただけます</p>
+                </div>
+                <div class="max-w-md mx-auto bg-gradient-to-br from-ocean-50 to-ocean-100 rounded-3xl p-8 shadow-lg card-hover fade-in">
+                    <div class="text-center mb-6">
+                        <div class="text-4xl font-bold text-ocean-600 mb-2">¥0</div>
+                        <p class="text-ocean-600">永年無料</p>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-ocean-600 mr-3 flex-shrink-0"></i>
+                            <span class="text-navy-700">プロフィール登録・管理</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-ocean-600 mr-3 flex-shrink-0"></i>
+                            <span class="text-navy-700">求人検索・応募機能</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-ocean-600 mr-3 flex-shrink-0"></i>
+                            <span class="text-navy-700">AIキャリア診断機能</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-ocean-600 mr-3 flex-shrink-0"></i>
+                            <span class="text-navy-700">LINE通知連携</span>
+                        </li>
+                    </ul>
+                    <a href="user-register.html" class="block">
+                        <button class="w-full bg-ocean-600 text-white py-3 rounded-full font-semibold hover:bg-ocean-700 transition-all duration-300">
+                            無料で始める
+                        </button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 企業向け料金プラン -->
+            <div>
+                <div class="text-center mb-8 fade-in">
+                    <h2 class="text-3xl font-bold text-navy-900 mb-2">企業の方</h2>
+                    <p class="text-lg text-navy-600">基本料金（月額）+ 成功報酬（年収の5-8%）</p>
+                </div>
+
+                <!-- 企業規模選択 -->
+                <div class="max-w-3xl mx-auto mb-8 fade-in">
+                    <label class="block text-sm font-medium text-navy-700 mb-3">従業員数を選択してください</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button class="company-size-btn" data-size="startup" data-price="10000" data-employees="1-10">
+                            <i data-lucide="anchor" class="w-8 h-8 mb-2"></i>
+                            <div class="font-semibold">スタートアップ</div>
+                            <div class="text-sm text-navy-600">1-10名</div>
+                        </button>
+                        <button class="company-size-btn" data-size="small" data-price="15000" data-employees="11-50">
+                            <i data-lucide="ship" class="w-8 h-8 mb-2"></i>
+                            <div class="font-semibold">中小企業</div>
+                            <div class="text-sm text-navy-600">11-50名</div>
+                        </button>
+                        <button class="company-size-btn" data-size="medium" data-price="30000" data-employees="51-200">
+                            <i data-lucide="sailboat" class="w-8 h-8 mb-2"></i>
+                            <div class="font-semibold">中堅企業</div>
+                            <div class="text-sm text-navy-600">51-200名</div>
+                        </button>
+                        <button class="company-size-btn" data-size="large" data-price="50000" data-employees="201+">
+                            <i data-lucide="ferry" class="w-8 h-8 mb-2"></i>
+                            <div class="font-semibold">大企業</div>
+                            <div class="text-sm text-navy-600">201名以上</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- プラン詳細表示 -->
+                <div id="plan-details" class="hidden fade-in">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                        <!-- 選択されたプラン詳細 -->
+                        <div class="bg-white rounded-2xl shadow-lg p-8">
+                            <h4 class="text-xl font-bold text-navy-900 mb-6">プラン詳細</h4>
+                            <div class="mb-6">
+                                <div class="text-3xl font-bold text-ocean-600 mb-2">
+                                    ¥<span id="monthly-price">0</span>
+                                    <span class="text-base font-normal text-navy-600">/月</span>
+                                </div>
+                                <p class="text-sm text-navy-600">+ 成功報酬（年収の<span id="success-fee">5-8</span>%）</p>
+                            </div>
+                            <ul class="space-y-3" id="plan-features">
+                                <!-- 動的に挿入 -->
+                            </ul>
+                        </div>
+
+                        <!-- 料金シミュレーター -->
+                        <div class="bg-gradient-to-br from-navy-50 to-navy-100 rounded-2xl p-8">
+                            <h4 class="text-xl font-bold text-navy-900 mb-6">料金シミュレーター</h4>
+                            <form id="price-simulator">
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-navy-700 mb-2">
+                                        年間採用予定人数
+                                    </label>
+                                    <input type="number" id="hiring-count" min="1" max="100" value="5"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
+                                </div>
+                                <div class="mb-6">
+                                    <label class="block text-sm font-medium text-navy-700 mb-2">
+                                        想定平均年収（万円）
+                                    </label>
+                                    <select id="average-salary"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500">
+                                        <option value="400">400万円</option>
+                                        <option value="500" selected>500万円</option>
+                                        <option value="600">600万円</option>
+                                        <option value="700">700万円</option>
+                                        <option value="800">800万円</option>
+                                    </select>
+                                </div>
+                                <div class="bg-white rounded-xl p-6">
+                                    <div class="text-sm text-navy-600 mb-2">年間予想費用</div>
+                                    <div class="text-2xl font-bold text-navy-900">
+                                        ¥<span id="annual-cost">0</span>
+                                    </div>
+                                    <div class="text-sm text-navy-600 mt-2">
+                                        （月額費用 + 成功報酬）
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 成功報酬の説明 -->
+            <div class="mt-16 bg-white rounded-2xl p-8 shadow-lg fade-in">
+                <h3 class="text-xl font-bold text-navy-900 mb-4">成功報酬について</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-ocean-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i data-lucide="shield-check" class="w-8 h-8 text-ocean-600"></i>
+                        </div>
+                        <h5 class="font-semibold text-navy-900 mb-2">3ヶ月定着保証</h5>
+                        <p class="text-sm text-navy-600">入社後3ヶ月以内の退職は返金対象</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-ocean-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i data-lucide="percent" class="w-8 h-8 text-ocean-600"></i>
+                        </div>
+                        <h5 class="font-semibold text-navy-900 mb-2">業界最安水準</h5>
+                        <p class="text-sm text-navy-600">大手人材紹介会社の半額以下</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-ocean-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i data-lucide="clock" class="w-8 h-8 text-ocean-600"></i>
+                        </div>
+                        <h5 class="font-semibold text-navy-900 mb-2">迅速対応</h5>
+                        <p class="text-sm text-navy-600">最短1営業日で利用開始可能</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="text-center mt-16 fade-in">
+                <p class="text-lg text-navy-700 mb-6">
+                    ShipHubなら、海事業界に特化した採用活動が効率的に行えます。
+                </p>
+                <div class="hover-menu">
+                    <button class="bg-ocean-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-ocean-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        無料で始める
+                    </button>
+                    <div class="hover-menu-content">
+                        <a href="user-register.html" class="hover-menu-item">
+                            <i data-lucide="user" class="w-4 h-4 inline mr-2"></i>
+                            求職者として登録
+                        </a>
+                        <a href="company-register.html" class="hover-menu-item">
+                            <i data-lucide="building" class="w-4 h-4 inline mr-2"></i>
+                            企業として登録
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-navy-950 text-white py-12">
+        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i data-lucide="ship" class="w-8 h-8 text-ocean-400"></i>
+                        <span class="text-2xl font-bold">ShipHub</span>
+                    </div>
+                    <p class="text-gray-400">
+                        海事人材に特化した<br>マッチングプラットフォーム
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">サービス</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">求人検索</a></li>
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">企業向けサービス</a></li>
+                        <li><a href="pricing.html" class="hover:text-ocean-400 transition-colors">料金プラン</a></li>
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">成功事例</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">サポート</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">ヘルプセンター</a></li>
+                        <li><a href="contact.html" class="hover:text-ocean-400 transition-colors">お問い合わせ</a></li>
+                        <li><a href="faq.html" class="hover:text-ocean-400 transition-colors">よくある質問</a></li>
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">利用規約</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">会社情報</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">会社概要</a></li>
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">採用情報</a></li>
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">プレスリリース</a></li>
+                        <li><a href="#" class="hover:text-ocean-400 transition-colors">プライバシーポリシー</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 ShipHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Mobile menu functionality
+        const hamburgerMenu = document.getElementById('hamburger-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (hamburgerMenu && mobileMenu) {
+            hamburgerMenu.addEventListener('click', function() {
+                hamburgerMenu.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!hamburgerMenu.contains(e.target) && !mobileMenu.contains(e.target)) {
+                    hamburgerMenu.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+
+        // Company size selection
+        const companySizeButtons = document.querySelectorAll('.company-size-btn');
+        const planDetails = document.getElementById('plan-details');
+        const monthlyPriceEl = document.getElementById('monthly-price');
+        const successFeeEl = document.getElementById('success-fee');
+        const planFeaturesEl = document.getElementById('plan-features');
+        const hiringCountEl = document.getElementById('hiring-count');
+        const averageSalaryEl = document.getElementById('average-salary');
+        const annualCostEl = document.getElementById('annual-cost');
+
+        const planFeatures = {
+            startup: [
+                '求人掲載無制限',
+                '基本的な検索機能',
+                'メールサポート',
+                '応募者管理機能'
+            ],
+            small: [
+                '求人掲載無制限',
+                'AIマッチング機能',
+                'チャットサポート',
+                '応募者管理機能',
+                'スカウトメール月50通'
+            ],
+            medium: [
+                '求人掲載無制限',
+                '高度なAIマッチング',
+                '優先サポート',
+                '詳細な分析レポート',
+                'スカウトメール月200通',
+                'API連携可能'
+            ],
+            large: [
+                '求人掲載無制限',
+                'カスタムAIマッチング',
+                '専任サポート',
+                'リアルタイム分析',
+                'スカウトメール無制限',
+                'フルAPI連携',
+                'カスタマイズ対応'
+            ]
+        };
+
+        const successFeeRates = {
+            startup: { rate: 0.05, display: '5' },
+            small: { rate: 0.06, display: '6' },
+            medium: { rate: 0.07, display: '7' },
+            large: { rate: 0.08, display: '8' }
+        };
+
+        let selectedPlan = null;
+
+        companySizeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                companySizeButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                selectedPlan = {
+                    size: button.dataset.size,
+                    price: parseInt(button.dataset.price),
+                    employees: button.dataset.employees
+                };
+                
+                showPlanDetails(selectedPlan);
+            });
+        });
+
+        function showPlanDetails(plan) {
+            planDetails.classList.remove('hidden');
+            monthlyPriceEl.textContent = plan.price.toLocaleString();
+            successFeeEl.textContent = successFeeRates[plan.size].display;
+            
+            planFeaturesEl.innerHTML = planFeatures[plan.size].map(feature => `
+                <li class="flex items-center">
+                    <i data-lucide="check-circle" class="w-5 h-5 text-ocean-600 mr-3 flex-shrink-0"></i>
+                    <span class="text-navy-700">${feature}</span>
+                </li>
+            `).join('');
+            
+            lucide.createIcons();
+            calculateAnnualCost();
+        }
+
+        function calculateAnnualCost() {
+            if (!selectedPlan) return;
+            
+            const hiringCount = parseInt(hiringCountEl.value);
+            const averageSalary = parseInt(averageSalaryEl.value) * 10000;
+            const monthlyFee = selectedPlan.price * 12;
+            const successFee = hiringCount * averageSalary * successFeeRates[selectedPlan.size].rate;
+            const annualCost = monthlyFee + successFee;
+            
+            annualCostEl.textContent = Math.round(annualCost).toLocaleString();
+        }
+
+        hiringCountEl.addEventListener('input', calculateAnnualCost);
+        averageSalaryEl.addEventListener('change', calculateAnnualCost);
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(element => {
+            observer.observe(element);
+        });
+
+        // Enhanced dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            dropdowns.forEach(dropdown => {
+                const content = dropdown.querySelector('.dropdown-content');
+                let timeoutId;
+                
+                // Show dropdown on mouse enter
+                dropdown.addEventListener('mouseenter', function() {
+                    clearTimeout(timeoutId);
+                    content.style.display = 'block';
+                });
+                
+                // Hide dropdown on mouse leave with delay
+                dropdown.addEventListener('mouseleave', function() {
+                    timeoutId = setTimeout(() => {
+                        content.style.display = 'none';
+                    }, 100); // 100ms delay to allow cursor movement
+                });
+                
+                // Keep dropdown open when hovering over content
+                content.addEventListener('mouseenter', function() {
+                    clearTimeout(timeoutId);
+                });
+                
+                content.addEventListener('mouseleave', function() {
+                    timeoutId = setTimeout(() => {
+                        content.style.display = 'none';
+                    }, 100);
+                });
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a[href^="#"]');
+            if (link) {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    // Account for fixed header height
+                    const headerHeight = 80;
+                    const elementPosition = targetElement.offsetTop - headerHeight;
+                    window.scrollTo({
+                        top: elementPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>

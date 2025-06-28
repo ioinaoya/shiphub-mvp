@@ -26,10 +26,10 @@
             LOCKOUT_HOURS: 1
         },
         ROUTES: {
-            COMPANY_HOME: 'post-job.html',
-            USER_HOME: 'index.html',
-            COMPANY_LOGIN: 'company-login.html',
-            USER_LOGIN: 'user-login.html'
+            COMPANY_HOME: 'company.html',
+            USER_HOME: 'job-request.html',
+            COMPANY_LOGIN: 'login.html',
+            USER_LOGIN: 'login.html'
         },
         PROXY_URL: 'https://cors-anywhere.herokuapp.com/'
     };
@@ -384,8 +384,8 @@
             }
 
             const redirectMap = {
-                '企業': CONFIG.ROUTES.COMPANY_HOME,
-                '求職者': CONFIG.ROUTES.USER_HOME
+                '企業': 'company.html',
+                '求職者': 'job-request.html'
             };
             
             const destination = redirectMap[userType];
@@ -448,28 +448,107 @@
         // 求人カード生成
         createJobCard(job) {
             const fields = job.fields;
-            const salary = fields.年収 ? `${fields.年収}万円` : '要相談';
+            const salary = fields.年収 ? `${fields.年収}` : '要相談';
             const status = fields.応募ステータス || '募集中';
-            const statusClass = status === '募集中' ? 'active' : 'paused';
+            const workType = fields.勤務形態 || '正社員';
+            const company = fields.企業名 || '企業名未設定';
+            const position = fields.職種 || '職種未設定';
+            const location = fields.勤務地 || '未設定';
+            const region = fields.地域 || '未設定';
+            
+            // 企業名の最初の文字を取得（アイコン用）
+            const companyInitial = company.charAt(0);
+            
+            // ステータスに応じたタグスタイル
+            const getStatusTag = (status) => {
+                switch(status) {
+                    case '急募': return '<span class="job-tag" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">急募</span>';
+                    case '募集中': return '<span class="job-tag" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">募集中</span>';
+                    case '募集停止': return '<span class="job-tag" style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);">募集停止</span>';
+                    default: return '<span class="job-tag">募集中</span>';
+                }
+            };
+            
+            // 職種に応じたアイコン
+            const getPositionIcon = (position) => {
+                if (position.includes('船') || position.includes('航海')) return 'ship';
+                if (position.includes('機関') || position.includes('エンジン')) return 'cog';
+                if (position.includes('港湾') || position.includes('港')) return 'anchor';
+                if (position.includes('管理') || position.includes('マネージャー')) return 'users';
+                if (position.includes('技術') || position.includes('エンジニア')) return 'wrench';
+                return 'briefcase';
+            };
+            
             return `
-                <div class="job-card" data-job='${JSON.stringify({
+                <div class="job-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300" data-job='${JSON.stringify({
                     jobId: job.id,
-                    position: fields.職種 || '',
-                    company: fields.企業名 || '',
-                    region: fields.地域 || '',
-                    location: fields.勤務地 || '',
-                    salary: fields.年収 || ''
+                    position: position,
+                    company: company,
+                    region: region,
+                    location: location,
+                    salary: fields.年収 || '',
+                    workType: workType,
+                    status: status
                 })}'>
-                    <div class="job-title">${fields.職種 || '職種未設定'}</div>
-                    <div class="job-company">${fields.企業名 || '企業名未設定'}</div>
-                    <div class="status ${statusClass}">${status}</div>
-                    <div class="job-details">
-                        <div class="detail-item"><div class="detail-icon">📍</div><span><strong>地域:</strong> ${fields.地域 || '未設定'}</span></div>
-                        <div class="detail-item"><div class="detail-icon">🏢</div><span><strong>勤務地:</strong> ${fields.勤務地 || '未設定'}</span></div>
-                        <div class="detail-item"><div class="detail-icon">📅</div><span><strong>募集開始:</strong> ${fields.募集開始日 || '未設定'}</span></div>
+                    <!-- ヘッダー部分 -->
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-start space-x-4">
+                            <div class="company-icon">
+                                ${companyInitial}
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="job-title text-xl font-bold text-navy-900 mb-1">${position}</h3>
+                                <p class="job-company text-ocean-600 font-semibold text-lg">${company}</p>
+                            </div>
+                        </div>
+                        ${getStatusTag(status)}
                     </div>
-                    <div class="salary">💰 年収: ${salary}</div>
-                    <button class="apply-btn">この求人に応募する</button>
+                    
+                    <!-- 勤務情報 -->
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="job-info-item flex items-center space-x-2">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-ocean-600"></i>
+                            <span class="text-sm text-navy-700 job-location">${location}</span>
+                        </div>
+                        <div class="job-info-item flex items-center space-x-2">
+                            <i data-lucide="clock" class="w-4 h-4 text-ocean-600"></i>
+                            <span class="text-sm text-navy-700">${workType}</span>
+                        </div>
+                        <div class="job-info-item flex items-center space-x-2">
+                            <i data-lucide="map" class="w-4 h-4 text-ocean-600"></i>
+                            <span class="text-sm text-navy-700">${region}</span>
+                        </div>
+                        <div class="job-info-item flex items-center space-x-2">
+                            <i data-lucide="${getPositionIcon(position)}" class="w-4 h-4 text-ocean-600"></i>
+                            <span class="text-sm text-navy-700">海事業界</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 年収ハイライト -->
+                    <div class="salary-highlight mb-4">
+                        <div class="flex items-center justify-center space-x-2">
+                            <i data-lucide="banknote" class="w-5 h-5"></i>
+                            <span class="text-lg">年収 ${salary}${salary !== '要相談' ? '万円' : ''}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 求人の詳細説明（もしあれば） -->
+                    ${fields.仕事内容 ? `
+                        <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                            <p class="text-sm text-navy-600 line-clamp-2">${fields.仕事内容.substring(0, 80)}${fields.仕事内容.length > 80 ? '...' : ''}</p>
+                        </div>
+                    ` : ''}
+                    
+                    <!-- アクションボタン -->
+                    <div class="flex space-x-3">
+                        <button class="apply-btn flex-1 bg-ocean-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-ocean-700 transition-all duration-300 flex items-center justify-center space-x-2">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>応募する</span>
+                        </button>
+                        <button class="flex items-center justify-center w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors duration-300">
+                            <i data-lucide="bookmark" class="w-5 h-5 text-navy-600"></i>
+                        </button>
+                    </div>
                 </div>
             `;
         },
@@ -689,6 +768,126 @@
                     scrollToSection(targetId);
                 }
             });
+        },
+
+        // 料金プラン機能初期化
+        initPricingSection() {
+            const planData = {
+                startup: {
+                    name: 'スタートアップ・個人事業主',
+                    price: 5000,
+                    successFee: '5%',
+                    features: [
+                        '求人掲載数：2件まで',
+                        'AIスカウト機能：月5名まで',
+                        '基本的な応募管理機能',
+                        'メールサポート'
+                    ]
+                },
+                small: {
+                    name: '中小企業',
+                    price: 15000,
+                    successFee: '5-6%',
+                    features: [
+                        '求人掲載数：5件まで',
+                        'AIスカウト機能：月20名まで',
+                        '自社紹介ページ作成機能',
+                        '応募者管理ダッシュボード',
+                        'チャットサポート'
+                    ]
+                },
+                medium: {
+                    name: '中堅企業',
+                    price: 30000,
+                    successFee: '6-7%',
+                    features: [
+                        '求人掲載数：10件まで',
+                        'AIスカウト機能：月50名まで',
+                        '優先表示オプション',
+                        '応募者データ分析機能',
+                        '電話サポート',
+                        'API連携（基本）'
+                    ]
+                },
+                large: {
+                    name: '大企業',
+                    price: 50000,
+                    successFee: '7-8%',
+                    features: [
+                        '求人掲載数：無制限',
+                        'AIスカウト機能：無制限',
+                        '全機能利用可能',
+                        '専任サポート',
+                        'API連携（カスタム対応）',
+                        'カスタマイズ相談可能'
+                    ]
+                }
+            };
+
+            let selectedPlan = null;
+
+            // 企業規模ボタンのクリックイベント
+            document.querySelectorAll('.company-size-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // アクティブ状態の更新
+                    document.querySelectorAll('.company-size-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // プラン詳細を表示
+                    selectedPlan = this.dataset.size;
+                    const plan = planData[selectedPlan];
+                    
+                    document.getElementById('plan-details').classList.remove('hidden');
+                    document.getElementById('monthly-price').textContent = plan.price.toLocaleString();
+                    document.getElementById('success-fee').textContent = plan.successFee;
+
+                    // 機能リストを更新
+                    const featuresHtml = plan.features.map(feature => `
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-ocean-600 mr-3 flex-shrink-0"></i>
+                            <span class="text-navy-700">${feature}</span>
+                        </li>
+                    `).join('');
+                    document.getElementById('plan-features').innerHTML = featuresHtml;
+
+                    // Lucideアイコンを再初期化
+                    if (window.lucide) {
+                        window.lucide.createIcons();
+                    }
+
+                    // 料金シミュレーターを更新
+                    updatePriceSimulator();
+                });
+            });
+
+            // 料金シミュレーター
+            function updatePriceSimulator() {
+                if (!selectedPlan) return;
+
+                const plan = planData[selectedPlan];
+                const hiringCount = parseInt(document.getElementById('hiring-count').value) || 0;
+                const avgSalary = parseInt(document.getElementById('average-salary').value) || 0;
+
+                // 成功報酬率を計算（範囲の中間値を使用）
+                let successFeeRate = 0.065; // デフォルト6.5%
+                switch(selectedPlan) {
+                    case 'startup': successFeeRate = 0.05; break;
+                    case 'small': successFeeRate = 0.055; break;
+                    case 'medium': successFeeRate = 0.065; break;
+                    case 'large': successFeeRate = 0.075; break;
+                }
+
+                // 年間費用計算
+                const monthlyFee = plan.price * 12;
+                const successFee = hiringCount * avgSalary * 10000 * successFeeRate;
+                const annualCost = monthlyFee + successFee;
+
+                document.getElementById('annual-cost').textContent = Math.floor(annualCost).toLocaleString();
+            }
+
+            // 入力フィールドの変更イベント
+            document.getElementById('hiring-count')?.addEventListener('input', updatePriceSimulator);
+            document.getElementById('average-salary')?.addEventListener('change', updatePriceSimulator);
         }
     };
 
@@ -723,12 +922,12 @@
 
         getCurrentPageType() {
             const path = window.location.pathname;
-            const filename = path.split('/').pop() || 'index.html';
+            const filename = path.split('/').pop() || 'job-request.html';
             
             if (filename === 'LP.html') return 'landing';
-            if (filename === 'index.html') return 'user-dashboard';
-            if (filename === 'post-job.html') return 'company-dashboard';
-            if (filename.includes('login') || filename.includes('register')) return 'auth';
+            if (filename === 'job-request.html') return 'user-dashboard';
+            if (filename === 'company.html') return 'company-dashboard';
+            if (filename === 'login.html' || filename === 'jobseeker-login.html' || filename === 'company-login.html' || filename.includes('register')) return 'auth';
             
             return 'unknown';
         },
@@ -745,11 +944,17 @@
             ShipHubLP.initCounterAnimations();
             ShipHubLP.initFAQSection();
             ShipHubLP.initSmoothScrolling();
+            ShipHubLP.initPricingSection();
+            
+            // Lucideアイコンの初期化
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
         },
 
         initUserDashboard() {
             // 求職者認証チェック
-            if (!ShipHubAuth.requireAuth('求職者', 'user-login.html')) {
+            if (!ShipHubAuth.requireAuth('求職者', 'login.html')) {
                 return;
             }
 
@@ -759,7 +964,7 @@
 
         initCompanyDashboard() {
             // 企業認証チェック
-            if (!ShipHubAuth.requireAuth('企業', 'company-login.html')) {
+            if (!ShipHubAuth.requireAuth('企業', 'login.html')) {
                 return;
             }
 
@@ -825,8 +1030,15 @@
             const applicationForm = document.getElementById('application-form');
 
             if (selectedJobCard) {
-                selectedJobCard.querySelector('.company').textContent = jobData.company || '企業名未設定';
-                selectedJobCard.querySelector('.position').textContent = jobData.position || '職種未設定';
+                const companyElement = selectedJobCard.querySelector('.company');
+                const positionElement = selectedJobCard.querySelector('.position');
+                
+                if (companyElement) {
+                    companyElement.textContent = jobData.company || '企業名未設定';
+                }
+                if (positionElement) {
+                    positionElement.textContent = jobData.position || '職種未設定';
+                }
             }
 
             if (applicationForm) {
@@ -998,10 +1210,19 @@
 
         // 認証フォーム初期化
         initAuthForms() {
-            // ログインフォーム
+            // ログインフォーム（旧形式: loginForm）
             const loginForm = document.getElementById('loginForm');
             if (loginForm) {
                 loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await this.handleLogin(e);
+                });
+            }
+
+            // ログインフォーム（新形式: login-form）
+            const newLoginForm = document.getElementById('login-form');
+            if (newLoginForm) {
+                newLoginForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     await this.handleLogin(e);
                 });
@@ -1030,8 +1251,20 @@
             const form = e.target;
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            const userType = form.dataset.userType; // 'user' or 'company'
-            const expectedUserType = userType === 'company' ? '企業' : '求職者';
+            
+            // ユーザータイプの判定：ファイル名ベースまたはdata属性から
+            let expectedUserType;
+            const currentPage = window.location.pathname.split('/').pop() || window.location.href.split('/').pop();
+            
+            if (currentPage.includes('jobseeker-login.html')) {
+                expectedUserType = '求職者';
+            } else if (currentPage.includes('company-login.html')) {
+                expectedUserType = '企業';
+            } else {
+                // 旧フォーマットの場合はdata属性から判定
+                const userType = form.dataset.userType; // 'user' or 'company'
+                expectedUserType = userType === 'company' ? '企業' : '求職者';
+            }
             
             // UI要素取得
             const submitBtn = form.querySelector('button[type="submit"]');
@@ -1066,9 +1299,12 @@
                     throw new Error(result.error);
                 }
             } catch (error) {
-                // エラー表示
+                // エラー表示：messageContainerがない場合はalertで表示
+                const errorMessage = ShipHubAuth.getErrorMessage(error.message || error);
                 if (messageContainer) {
-                    messageContainer.innerHTML = `<div class="error-message">${ShipHubAuth.getErrorMessage(error.message || error)}</div>`;
+                    messageContainer.innerHTML = `<div class="error-message">${errorMessage}</div>`;
+                } else {
+                    alert(errorMessage);
                 }
                 
                 // ボタン復元

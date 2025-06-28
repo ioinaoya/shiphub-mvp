@@ -7,7 +7,13 @@
       "Bash(python:*)",
       "Bash(ls:*)",
       "Bash(find:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(for file in *.html)",
+      "Bash(do sed -i 's|<script src=\"\"https://cdn.tailwindcss.com\"\"></script>|<link rel=\"\"stylesheet\"\" href=\"\"tailwind.min.css\"\">|g' \"$file\")",
+      "Bash(done)",
+      "Bash(npx:*)",
+      "Bash(rg:*)"
     ],
     "deny": []
   }
