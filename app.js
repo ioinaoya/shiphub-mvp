@@ -47,6 +47,8 @@
                     email: userData.fields['メールアドレス'],
                     userType: userData.fields['ユーザータイプ'],
                     companyName: userData.fields['会社名'] || null,
+                    userName: userData.fields['氏名'] || null,
+                    jobTitle: userData.fields['職種'] || userData.fields['役職'] || null,
                     loginTime: new Date().toISOString(),
                     isAuthenticated: true
                 };

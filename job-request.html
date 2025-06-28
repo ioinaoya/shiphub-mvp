@@ -424,8 +424,8 @@
                             田
                         </div>
                         <div class="hidden sm:block">
-                            <p class="text-sm font-semibold text-navy-900">田中 太郎</p>
-                            <p class="text-xs text-navy-600">船舶技師</p>
+                            <p id="user-name" class="text-sm font-semibold text-navy-900">読み込み中...</p>
+                            <p id="user-title" class="text-xs text-navy-600">読み込み中...</p>
                         </div>
                     </div>
                 </div>
@@ -439,7 +439,7 @@
                 <div class="ocean-gradient rounded-2xl p-6 sm:p-8 text-white mb-6 sm:mb-8">
                     <div class="flex flex-col sm:flex-row items-start justify-between">
                         <div class="flex-1">
-                            <h2 class="text-2xl sm:text-3xl font-bold mb-2">おかえりなさい、田中さん</h2>
+                            <h2 id="welcome-message" class="text-2xl sm:text-3xl font-bold mb-2">おかえりなさい</h2>
                             <p class="text-ocean-100 text-base sm:text-lg">今日も新しいキャリアの扉を開きましょう</p>
                         </div>
                         <div class="hidden md:block mt-4 sm:mt-0">
@@ -1389,5 +1389,45 @@
     </script>
     
     <script src="app.js"></script>
+    
+    <script>
+        // ページ固有の認証処理
+        document.addEventListener('DOMContentLoaded', function() {
+            // 求職者認証チェック
+            if (!window.ShipHubAuth || !window.ShipHubAuth.session.isValid('求職者')) {
+                console.log('Not authenticated as jobseeker, redirecting to login');
+                window.location.href = 'jobseeker-login.html';
+                return;
+            }
+            
+            // ユーザー情報の画面反映
+            const sessionData = window.ShipHubAuth.session.get();
+            if (sessionData && sessionData.userType === '求職者') {
+                // ウェルカムメッセージ更新
+                const welcomeElement = document.getElementById('welcome-message');
+                if (welcomeElement) {
+                    const displayName = sessionData.userName || sessionData.email.split('@')[0] || '求職者';
+                    welcomeElement.textContent = `おかえりなさい、${displayName}さん`;
+                }
+                
+                // ユーザー名と職種を表示
+                const userNameElement = document.getElementById('user-name');
+                const userTitleElement = document.getElementById('user-title');
+                
+                if (userNameElement) {
+                    userNameElement.textContent = sessionData.userName || '名前未設定';
+                }
+                
+                if (userTitleElement) {
+                    userTitleElement.textContent = sessionData.jobTitle || '求職者';
+                }
+                
+                console.log('Jobseeker page initialized for:', sessionData.email);
+            } else {
+                console.log('No valid jobseeker session found');
+                window.location.href = 'jobseeker-login.html';
+            }
+        });
+    </script>
 </body>
 </html>

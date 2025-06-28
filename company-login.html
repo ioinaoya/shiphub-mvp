@@ -161,11 +161,34 @@
                 <!-- Login Button -->
                 <button 
                     type="submit"
+                    id="login-btn"
                     class="btn-primary w-full text-white py-3 px-6 rounded-lg font-semibold text-lg shadow-lg"
                 >
                     ログイン
                 </button>
             </form>
+            
+            <!-- Messages -->
+            <div id="success-message" class="hidden mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="check-circle" class="w-5 h-5"></i>
+                    <span>ログインに成功しました！リダイレクト中...</span>
+                </div>
+            </div>
+            
+            <div id="error-message" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                    <span id="error-text">ログインに失敗しました。</span>
+                </div>
+            </div>
+            
+            <div id="loading-message" class="hidden mt-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded-lg">
+                <div class="flex items-center space-x-2">
+                    <div class="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <span>ログイン中...</span>
+                </div>
+            </div>
             
             <!-- Divider -->
             <div class="relative my-8">
@@ -216,14 +239,133 @@
             lucide.createIcons();
         });
         
-        // Form submission is now handled by app.js
-        // The app.js script will automatically attach event listeners to the login-form
-        
         // Auto-focus on email field
         document.getElementById('email').focus();
     </script>
     
     <!-- ShipHub Main Application Script -->
     <script src="app.js"></script>
+    
+    <script>
+        // ログインフォーム処理
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('login-form');
+            const loginBtn = document.getElementById('login-btn');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            const loadingMessage = document.getElementById('loading-message');
+            const errorText = document.getElementById('error-text');
+            
+            // 既にログイン済みかチェック
+            if (window.ShipHubAuth && window.ShipHubAuth.session.isValid('企業')) {
+                console.log('Already logged in as company');
+                window.location.href = 'company.html';
+                return;
+            }
+            
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // メッセージリセット
+                hideAllMessages();
+                showMessage(loadingMessage);
+                
+                // ボタン無効化
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'ログイン中...';
+                
+                // フォームデータ取得
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                
+                // バリデーション
+                if (!email || !password) {
+                    showError('メールアドレスとパスワードを入力してください。');
+                    resetForm();
+                    return;
+                }
+                
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showError('有効なメールアドレスを入力してください。');
+                    resetForm();
+                    return;
+                }
+                
+                try {
+                    // ログイン実行
+                    console.log('Attempting login for:', email);
+                    const result = await window.ShipHubAuth.authenticate(email, password, '企業');
+                    
+                    if (result.success) {
+                        console.log('Login successful:', result.user);
+                        
+                        showMessage(successMessage);
+                        
+                        // 2秒後にリダイレクト
+                        setTimeout(() => {
+                            window.location.href = 'company.html';
+                        }, 2000);
+                        
+                    } else {
+                        console.log('Login failed:', result.error);
+                        const errorMsg = getErrorMessage(result.error);
+                        showError(errorMsg);
+                        resetForm();
+                    }
+                    
+                } catch (error) {
+                    console.error('Login error:', error);
+                    const errorMsg = getErrorMessage(error.message);
+                    showError(errorMsg);
+                    resetForm();
+                }
+            });
+            
+            function getErrorMessage(error) {
+                switch(error) {
+                    case 'USER_NOT_FOUND':
+                        return 'ユーザーが見つかりません。';
+                    case 'WRONG_PASSWORD':
+                        return 'パスワードが正しくありません。';
+                    case 'WRONG_USER_TYPE':
+                        return '企業アカウントでログインしてください。';
+                    case 'ACCOUNT_DISABLED':
+                        return 'アカウントが無効化されています。';
+                    case 'LOGIN_ATTEMPTS_EXCEEDED':
+                        return 'ログイン試行回数が上限を超えました。しばらく待ってから再度お試しください。';
+                    case 'TIMEOUT_ERROR':
+                        return 'タイムアウトしました。ネットワークを確認してください。';
+                    case 'NETWORK_ERROR':
+                        return 'ネットワークエラーが発生しました。';
+                    default:
+                        return 'ログインに失敗しました。';
+                }
+            }
+            
+            function hideAllMessages() {
+                successMessage.classList.add('hidden');
+                errorMessage.classList.add('hidden');
+                loadingMessage.classList.add('hidden');
+            }
+            
+            function showMessage(messageElement) {
+                hideAllMessages();
+                messageElement.classList.remove('hidden');
+                lucide.createIcons();
+            }
+            
+            function showError(message) {
+                errorText.textContent = message;
+                showMessage(errorMessage);
+            }
+            
+            function resetForm() {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'ログイン';
+                hideAllMessages();
+            }
+        });
+    </script>
 </body>
 </html>
