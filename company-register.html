@@ -100,7 +100,7 @@
         <div class="bg-white p-8 text-center">
             <div class="flex items-center justify-center space-x-3 mb-6">
                 <div class="w-12 h-12 bg-navy-100 rounded-full flex items-center justify-center">
-                    <img src="image0.jpeg" alt="ShipHub Logo" class="logo-icon w-10 h-10">
+                    <img src="image0.png" alt="ShipHub Logo" class="logo-icon w-10 h-10">
                 </div>
                 <h1 class="text-2xl font-bold text-navy-900">ShipHub</h1>
             </div>
@@ -218,6 +218,8 @@
         </div>
     </div>
 
+    <!-- app.jsを読み込み -->
+    <script src="app.js"></script>
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
@@ -238,17 +240,12 @@
             lucide.createIcons();
         });
         
-        // Airtable configuration
-        const AIRTABLE_API_KEY = 'patZ8TUYsR4CpqmJD.44aca99e4b71c9f73e6e6e6e87c2a5bbfbddd5b97b96f1da624f3748c02dc8d3';
-        const AIRTABLE_BASE_ID = 'app9x4vRYH6V1Yq6p';
-        const AIRTABLE_TABLE_NAME = 'Companies';
-
-        // Form submission
+        // Form submission - app.jsのShipHubAuthを使用
         document.getElementById('register-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const companyName = document.getElementById('company-name').value;
-            const email = document.getElementById('email').value;
+            const companyName = document.getElementById('company-name').value.trim();
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const terms = document.getElementById('terms').checked;
             
@@ -274,33 +271,22 @@
             submitButton.disabled = true;
             
             try {
-                // Submit to Airtable
-                const response = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        fields: {
-                            '企業名': companyName,
-                            'メールアドレス': email,
-                            'パスワード': password, // Note: In production, hash this password
-                            'ユーザータイプ': '企業',
-                            '登録日時': new Date().toISOString(),
-                            'ステータス': '有効'
-                        }
-                    })
-                });
+                // app.jsのShipHubAuthのregisterCompany関数を使用
+                const formData = {
+                    companyName: companyName,
+                    email: email,
+                    password: password
+                };
                 
-                if (response.ok) {
+                const result = await window.ShipHubAuth.registerCompany(formData);
+                
+                if (result.success) {
                     alert('企業登録が完了しました！');
-                    // Redirect to login page or dashboard
-                    window.location.href = 'company-login.html';
+                    // registerCompany関数内で自動ログインされるため、リダイレクトのみ
+                    window.location.href = 'company.html';
                 } else {
-                    const errorData = await response.json();
-                    console.error('Airtable error:', errorData);
-                    alert('登録に失敗しました。もう一度お試しください。');
+                    const errorMessage = window.ShipHubAuth.getErrorMessage(result.error);
+                    alert(errorMessage);
                 }
             } catch (error) {
                 console.error('Registration error:', error);

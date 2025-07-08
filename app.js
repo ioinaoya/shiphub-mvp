@@ -14,7 +14,8 @@
             BASE_ID: 'appD06KJ0je7fo62a',
             USER_TABLE: 'ユーザー管理',
             JOBS_TABLE: '求人',
-            APPLICATION_TABLE: '応募履歴'
+            APPLICATION_TABLE: '応募履歴',
+            BOOKMARKS_TABLE: 'お気に入り'
         },
         SESSION: {
             KEY: 'shiphub_session',
@@ -329,7 +330,7 @@
                     'メールアドレス': this.security.sanitizeInput(formData.email),
                     'パスワード': this.security.hashPassword(formData.password),
                     'ユーザータイプ': '求職者',
-                    '氏名': this.security.sanitizeInput(`${formData.lastName} ${formData.firstName}`)
+                    '氏名': this.security.sanitizeInput(formData.name || `${formData.lastName || ''} ${formData.firstName || ''}`)
                 };
 
                 const newUser = await this.api.createUser(userData);
@@ -486,6 +487,7 @@
                     jobId: job.id,
                     position: position,
                     company: company,
+                    email: fields.メールアドレス || '',
                     region: region,
                     location: location,
                     salary: fields.年収 || '',
@@ -556,8 +558,12 @@
         },
 
         // 応募記録
-        async recordApplication({company, position, jobId}, name, email, message) {
+        async recordApplication({company, position, jobId, email: companyEmail}, name, email, message) {
             try {
+                // 現在のユーザーIDを取得
+                const currentUser = ShipHubAuth.getCurrentUser();
+                const userId = currentUser ? currentUser.id : '';
+                
                 const response = await fetch(`https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.APPLICATION_TABLE)}`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${CONFIG.API.TOKEN}`, 'Content-Type': 'application/json' },
@@ -569,12 +575,22 @@
                                 '名前': name,
                                 'メールアドレス': email,
                                 '自己紹介': message,
-                                ...(jobId ? { '求人ID': jobId } : {})
+                                ...(companyEmail ? { '企業メールアドレス': companyEmail } : {})
                             }}
                         ]
                     })
                 });
                 if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('Airtable field validation error:', errorData);
+                    console.error('Submitted data:', {
+                        '会社名': company,
+                        '職種': position,
+                        '名前': name,
+                        'メールアドレス': email,
+                        '自己紹介': message,
+                        ...(companyEmail ? { '企業メールアドレス': companyEmail } : {})
+                    });
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return true;
@@ -582,6 +598,9 @@
                 // CORS対応
                 if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
                     try {
+                        const currentUser = ShipHubAuth.getCurrentUser();
+                        const userId = currentUser ? currentUser.id : '';
+                        
                         const proxyResponse = await fetch(`${CONFIG.PROXY_URL}https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.APPLICATION_TABLE)}`, {
                             method: 'POST',
                             headers: { 'Authorization': `Bearer ${CONFIG.API.TOKEN}`, 'Content-Type': 'application/json' },
@@ -589,13 +608,18 @@
                                 records: [{ fields: {
                                     '会社名': company, '職種': position, '名前': name,
                                     'メールアドレス': email, '自己紹介': message,
-                                    ...(jobId ? { '求人ID': jobId } : {})
+                                    ...(companyEmail ? { '企業メールアドレス': companyEmail } : {})
                                 }}]
                             })
                         });
-                        if (!proxyResponse.ok) throw new Error('PROXY_ERROR');
+                        if (!proxyResponse.ok) {
+                            const errorData = await proxyResponse.json().catch(() => ({}));
+                            console.error('Proxy Airtable field validation error:', errorData);
+                            throw new Error('PROXY_ERROR');
+                        }
                         return true;
                     } catch (proxyError) {
+                        console.error('CORS proxy error:', proxyError);
                         throw new Error('CORS_ERROR');
                     }
                 }
@@ -603,8 +627,23 @@
             }
         },
 
-        // 求人投稿
+        // 求人投稿（統合版）
         async postJob(jobData) {
+            // データ検証
+            if (!jobData.company || !jobData.position || !jobData.region || !jobData.location) {
+                console.error('Missing required fields:', {
+                    company: !jobData.company,
+                    position: !jobData.position,
+                    region: !jobData.region,
+                    location: !jobData.location
+                });
+                
+                throw new Error('MISSING_REQUIRED_FIELDS');
+            }
+            
+            // デバッグログ
+            console.log('Submitting job data to Airtable:', jobData);
+            
             try {
                 const response = await fetch(`https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.JOBS_TABLE)}`, {
                     method: 'POST',
@@ -612,25 +651,365 @@
                         'Authorization': `Bearer ${CONFIG.API.TOKEN}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ records: [{ fields: jobData }] })
+                    body: JSON.stringify({
+                        records: [{
+                            fields: {
+                                '職種': jobData.position,     // 修正されたマッピング
+                                '企業名': jobData.company,    // 修正されたマッピング
+                                'メールアドレス': jobData.email,
+                                '地域': jobData.region,
+                                '勤務地': jobData.location,
+                                '年収': jobData.salary ? parseInt(jobData.salary) : 0,
+                                '勤務形態': jobData.workType,
+                                '詳細': jobData.detail,       // 修正されたマッピング
+                                '必要な資格・経験': jobData.requirement,
+                                '応募ステータス': '募集中'
+                            }
+                        }]
+                    })
                 });
-                if (!response.ok) throw new Error(await response.text());
-                return true;
+                
+                console.log('Airtable API response status:', response.status);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Job posted successfully:', result);
+                    return { success: true };
+                } else {
+                    let errorData;
+                    try {
+                        errorData = await response.json();
+                    } catch (e) {
+                        errorData = { error: { message: 'Response parsing error' } };
+                    }
+                    console.error('Airtable API error:', errorData, 'Status:', response.status);
+                    
+                    // 422エラー時の詳細エラーメッセージ
+                    if (response.status === 422) {
+                        if (errorData.error && errorData.error.message) {
+                            if (errorData.error.message.includes('field')) {
+                                throw new Error('FIELD_ERROR: Airtableのフィールド構造と一致しない項目があります。');
+                            } else if (errorData.error.message.includes('Invalid')) {
+                                throw new Error('INVALID_DATA: 入力データに問題があります。必須項目を確認してください。');
+                            } else {
+                                throw new Error(`AIRTABLE_ERROR: ${errorData.error.message}`);
+                            }
+                        } else {
+                            throw new Error('UNKNOWN_422_ERROR: 不明な422エラーが発生しました。');
+                        }
+                    }
+                    
+                    throw new Error(`HTTP_ERROR: Status ${response.status}`);
+                }
             } catch (error) {
-                // CORS対応
-                if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
-                    const proxyResponse = await fetch(`${CONFIG.PROXY_URL}https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.JOBS_TABLE)}`, {
-                        method: 'POST',
-                        headers: {
+                console.error('Network or processing error:', error);
+                
+                if (error.message.includes('fetch')) {
+                    throw new Error('NETWORK_ERROR: ネットワークエラーが発生しました。インターネット接続を確認してください。');
+                } else if (error.message.startsWith('FIELD_ERROR') || 
+                          error.message.startsWith('INVALID_DATA') || 
+                          error.message.startsWith('AIRTABLE_ERROR') ||
+                          error.message.startsWith('MISSING_REQUIRED_FIELDS') ||
+                          error.message.startsWith('UNKNOWN_422_ERROR') ||
+                          error.message.startsWith('HTTP_ERROR')) {
+                    // 既に適切にフォーマットされたエラーはそのまま投げる
+                    throw error;
+                } else {
+                    throw new Error('UNEXPECTED_ERROR: 予期しないエラーが発生しました。しばらくしてから再度お試しください。');
+                }
+            }
+        },
+        
+        // エラーメッセージ取得
+        getJobPostErrorMessage(errorMessage) {
+            if (errorMessage.includes('MISSING_REQUIRED_FIELDS')) {
+                return '必須項目が入力されていません。企業名、職種、地域、勤務地を入力してください。';
+            } else if (errorMessage.includes('FIELD_ERROR')) {
+                return 'フィールドエラー: Airtableのフィールド構造と一致しない項目があります。管理者にお問い合わせください。';
+            } else if (errorMessage.includes('INVALID_DATA')) {
+                return '入力データに問題があります。必須項目を確認して再度お試しください。';
+            } else if (errorMessage.includes('NETWORK_ERROR')) {
+                return 'ネットワークエラーが発生しました。インターネット接続を確認して再度お試しください。';
+            } else if (errorMessage.includes('AIRTABLE_ERROR')) {
+                return errorMessage.split(': ')[1] || 'Airtableでエラーが発生しました。';
+            } else {
+                return '予期しないエラーが発生しました。しばらくしてから再度お試しください。';
+            }
+        }
+    };
+
+    // =============================================================================
+    // データ管理システム（ダッシュボード・応募履歴・お気に入り）
+    // =============================================================================
+    
+    const ShipHubData = {
+        // ダッシュボード統計取得
+        async getDashboardStats(userId) {
+            try {
+                if (!userId) {
+                    return {
+                        applying: 0,
+                        documentPassed: 0,
+                        bookmarked: 0,
+                        profileCompletion: 85
+                    };
+                }
+                
+                // 応募履歴を取得してカウント - ユーザーIDで検索
+                const applicationsUrl = `https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.APPLICATION_TABLE)}?filterByFormula=${encodeURIComponent(`{ユーザーID}='${userId}'`)}`;
+                const applicationsResponse = await fetch(applicationsUrl, {
+                    headers: { 
+                        'Authorization': `Bearer ${CONFIG.API.TOKEN}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                // お気に入りは後で実装（まずは応募履歴のみ）
+                let bookmarks = [];
+                try {
+                    const bookmarksUrl = `https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.BOOKMARKS_TABLE)}?filterByFormula=${encodeURIComponent(`{ユーザーID}='${userId}'`)}`;
+                    const bookmarksResponse = await fetch(bookmarksUrl, {
+                        headers: { 
                             'Authorization': `Bearer ${CONFIG.API.TOKEN}`,
                             'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ records: [{ fields: jobData }] })
+                        }
                     });
-                    if (!proxyResponse.ok) throw new Error('PROXY_ERROR');
-                    return true;
+                    
+                    if (bookmarksResponse.ok) {
+                        const bookmarksData = await bookmarksResponse.json();
+                        bookmarks = bookmarksData.records || [];
+                    }
+                } catch (bookmarkError) {
+                    console.warn('Bookmarks table not accessible:', bookmarkError);
+                    bookmarks = [];
                 }
+                
+                const applications = applicationsResponse.ok ? (await applicationsResponse.json()).records : [];
+                
+                // ステータス別集計
+                const statusCounts = {
+                    applying: 0,
+                    documentPassed: 0,
+                    bookmarked: bookmarks.length,
+                    profileCompletion: 85 // 固定値（将来的にプロフィール完成度を計算）
+                };
+                
+                applications.forEach(app => {
+                    const status = app.fields['ステータス'] || '応募中';
+                    if (status.includes('応募') || status === '新規') {
+                        statusCounts.applying++;
+                    } else if (status.includes('書類通過') || status.includes('面接')) {
+                        statusCounts.documentPassed++;
+                    }
+                });
+                
+                return statusCounts;
+            } catch (error) {
+                console.error('Error fetching dashboard stats:', error);
+                return {
+                    applying: 0,
+                    documentPassed: 0,
+                    bookmarked: 0,
+                    profileCompletion: 85
+                };
+            }
+        },
+
+        // 応募履歴取得
+        async getApplicationHistory(userId) {
+            try {
+                if (!userId) return [];
+                
+                const response = await fetch(`https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.APPLICATION_TABLE)}?filterByFormula=${encodeURIComponent(`{ユーザーID}='${userId}'`)}&sort[0][field]=${encodeURIComponent('応募日')}&sort[0][direction]=desc`, {
+                    headers: { 'Authorization': `Bearer ${CONFIG.API.TOKEN}` }
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.json();
+                return data.records.map(record => ({
+                    id: record.id,
+                    company: record.fields['会社名'] || '企業名未設定',
+                    position: record.fields['職種'] || '職種未設定',
+                    applicationDate: record.fields['応募日'] || new Date().toISOString().split('T')[0],
+                    status: record.fields['ステータス'] || '応募中',
+                    message: record.fields['自己紹介'] || ''
+                }));
+            } catch (error) {
+                console.error('Error fetching application history:', error);
+                return [];
+            }
+        },
+
+        // お気に入り取得
+        async getBookmarks(userId) {
+            try {
+                if (!userId) return [];
+                
+                const response = await fetch(`https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.BOOKMARKS_TABLE)}?filterByFormula=${encodeURIComponent(`{ユーザーID}='${userId}'`)}&sort[0][field]=${encodeURIComponent('登録日時')}&sort[0][direction]=desc`, {
+                    headers: { 'Authorization': `Bearer ${CONFIG.API.TOKEN}` }
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.json();
+                return data.records.map(record => ({
+                    id: record.id,
+                    jobId: record.fields['求人ID'],
+                    bookmarkDate: record.fields['登録日時'] || new Date().toISOString().split('T')[0]
+                }));
+            } catch (error) {
+                console.error('Error fetching bookmarks:', error);
+                return [];
+            }
+        },
+
+        // お気に入り追加
+        async addBookmark(userId, jobId) {
+            try {
+                const response = await fetch(`https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.BOOKMARKS_TABLE)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${CONFIG.API.TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        records: [{
+                            fields: {
+                                'ユーザーID': userId,
+                                '求人ID': jobId,
+                                '登録日時': new Date().toISOString().split('T')[0]
+                            }
+                        }]
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('Bookmark API error:', errorData);
+                    console.error('Submitted bookmark data:', {
+                        'ユーザーID': userId,
+                        '求人ID': jobId,
+                        '登録日時': new Date().toISOString().split('T')[0]
+                    });
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error adding bookmark:', error);
                 throw error;
+            }
+        },
+
+        // お気に入り削除
+        async removeBookmark(userId, jobId) {
+            try {
+                if (!userId || !jobId) throw new Error('Missing required parameters');
+                
+                // まず該当のお気に入りレコードを検索
+                const searchResponse = await fetch(`https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.BOOKMARKS_TABLE)}?filterByFormula=${encodeURIComponent(`AND({ユーザーID}='${userId}',{求人ID}='${jobId}')`)}`, {
+                    headers: { 'Authorization': `Bearer ${CONFIG.API.TOKEN}` }
+                });
+                
+                if (!searchResponse.ok) throw new Error(`HTTP ${searchResponse.status}`);
+                
+                const searchData = await searchResponse.json();
+                if (searchData.records.length === 0) {
+                    throw new Error('Bookmark not found');
+                }
+                
+                // レコードを削除
+                const recordId = searchData.records[0].id;
+                const deleteResponse = await fetch(`https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.BOOKMARKS_TABLE)}/${recordId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${CONFIG.API.TOKEN}` }
+                });
+                
+                if (!deleteResponse.ok) throw new Error(`HTTP ${deleteResponse.status}`);
+                return await deleteResponse.json();
+            } catch (error) {
+                console.error('Error removing bookmark:', error);
+                throw error;
+            }
+        },
+
+        // お気に入りチェック
+        async isBookmarked(userId, jobId) {
+            try {
+                if (!userId || !jobId) return false;
+                
+                const response = await fetch(`https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.BOOKMARKS_TABLE)}?filterByFormula=${encodeURIComponent(`AND({ユーザーID}='${userId}',{求人ID}='${jobId}')`)}`, {
+                    headers: { 'Authorization': `Bearer ${CONFIG.API.TOKEN}` }
+                });
+                
+                if (!response.ok) return false;
+                
+                const data = await response.json();
+                return data.records.length > 0;
+            } catch (error) {
+                console.error('Error checking bookmark:', error);
+                return false;
+            }
+        },
+
+        // 企業の応募者管理用データ取得
+        async getCompanyApplications(companyName) {
+            try {
+                if (!companyName) return [];
+                
+                const response = await fetch(`https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.APPLICATION_TABLE)}?filterByFormula=${encodeURIComponent(`{会社名}='${companyName}'`)}&sort[0][field]=${encodeURIComponent('Created time')}&sort[0][direction]=desc`, {
+                    headers: { 'Authorization': `Bearer ${CONFIG.API.TOKEN}` }
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.json();
+                return data.records.map(record => ({
+                    id: record.id,
+                    name: record.fields['名前'] || '名前未設定',
+                    email: record.fields['メールアドレス'] || '',
+                    position: record.fields['職種'] || '職種未設定',
+                    applicationDate: record.createdTime ? record.createdTime.split('T')[0] : new Date().toISOString().split('T')[0],
+                    status: '新規応募',
+                    message: record.fields['自己紹介'] || '',
+                    companyEmail: record.fields['企業メールアドレス'] || ''
+                }));
+            } catch (error) {
+                console.error('Error fetching company applications:', error);
+                return [];
+            }
+        },
+
+        // 企業の求人管理用データ取得
+        async getCompanyJobs(companyName) {
+            try {
+                if (!companyName) return [];
+                
+                const response = await fetch(`https://api.airtable.com/v0/${CONFIG.API.BASE_ID}/${encodeURIComponent(CONFIG.API.JOBS_TABLE)}?filterByFormula=${encodeURIComponent(`{企業名}='${companyName}'`)}&sort[0][field]=${encodeURIComponent('Created time')}&sort[0][direction]=desc`, {
+                    headers: { 'Authorization': `Bearer ${CONFIG.API.TOKEN}` }
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.json();
+                return data.records.map(record => ({
+                    id: record.id,
+                    position: record.fields['職種'] || '職種未設定',
+                    location: record.fields['勤務地'] || '勤務地未設定',
+                    region: record.fields['地域'] || '地域未設定',
+                    salary: record.fields['年収'] || 0,
+                    workType: record.fields['勤務形態'] || '正社員',
+                    status: record.fields['応募ステータス'] || '募集中',
+                    email: record.fields['メールアドレス'] || '',
+                    detail: record.fields['詳細'] || '',
+                    requirement: record.fields['必要な資格・経験'] || '',
+                    viewCount: record.fields['閲覧数'] || 0,
+                    applicantCount: 0,
+                    createdDate: record.createdTime ? record.createdTime.split('T')[0] : new Date().toISOString().split('T')[0]
+                }));
+            } catch (error) {
+                console.error('Error fetching company jobs:', error);
+                return [];
             }
         }
     };
@@ -939,6 +1318,9 @@
             window.ShipHubAuth = ShipHubAuth;
             window.requireAuth = ShipHubAuth.requireAuth.bind(ShipHubAuth);
             window.logout = ShipHubAuth.logout.bind(ShipHubAuth);
+            
+            // グローバルデータ管理機能
+            window.ShipHubData = ShipHubData;
         },
 
         initLandingPage() {
@@ -971,6 +1353,7 @@
             }
 
             this.initJobPostingForm();
+            this.initCompanyDataManagement();
         },
 
         initAuthPages() {
@@ -1102,7 +1485,7 @@
             }
         },
 
-        // 求人投稿フォーム初期化
+        // 求人投稿フォーム初期化（統合版）
         initJobPostingForm() {
             const form = document.getElementById('post-job-form');
             const previewBtn = document.getElementById('preview-btn');
@@ -1114,12 +1497,12 @@
                 el.addEventListener('input', () => this.validateJobForm());
             });
 
-            // プレビュー
+            // プレビュー機能
             if (previewBtn) {
                 previewBtn.addEventListener('click', () => this.showJobPreview());
             }
 
-            // フォーム送信
+            // フォーム送信（統合版）
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 await this.handleJobSubmit(e);
@@ -1130,6 +1513,7 @@
             let valid = true;
             const requiredFields = [
                 {id: 'company', error: 'company-error'},
+                {id: 'email', error: 'email-error'},
                 {id: 'position', error: 'position-error'},
                 {id: 'region', error: 'region-error'},
                 {id: 'location', error: 'location-error'},
@@ -1155,59 +1539,330 @@
         },
 
         showJobPreview() {
-            if (!this.validateJobForm()) return;
-
-            const preview = document.getElementById('preview-card');
-            if (!preview) return;
-
-            const get = id => {
-                const element = document.getElementById(id);
-                return element ? element.value.trim() : '';
+            // フォームデータを取得
+            const form = document.getElementById('post-job-form');
+            const formData = new FormData(form);
+            
+            const previewData = {
+                company: formData.get('company') || '未入力',
+                position: formData.get('position') || '未入力',
+                region: formData.get('region') || '未選択',
+                location: formData.get('location') || '未入力',
+                salary: formData.get('salary') ? `${formData.get('salary')}万円` : '未入力',
+                workType: formData.get('workType') || '未選択',
+                detail: formData.get('detail') || '未入力',
+                requirement: formData.get('requirement') || '未入力'
             };
-
-            preview.innerHTML = `
-                <div class="preview-title">プレビュー</div>
-                <div class="preview-row"><b>企業名:</b> ${get('company')}</div>
-                <div class="preview-row"><b>職種:</b> ${get('position')}</div>
-                <div class="preview-row"><b>地域:</b> ${get('region')}</div>
-                <div class="preview-row"><b>勤務地:</b> ${get('location')}</div>
-                <div class="preview-row"><b>年収:</b> ${get('salary')}万円</div>
-                <div class="preview-row"><b>応募ステータス:</b> ${get('status')}</div>
+            
+            // プレビューコンテンツを作成
+            const previewContent = `
+                <div class="bg-white rounded-xl shadow-lg p-6 max-w-2xl mx-auto">
+                    <h3 class="text-2xl font-bold text-navy-900 mb-4">${previewData.position}</h3>
+                    <p class="text-lg text-navy-700 mb-4">${previewData.company}</p>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center space-x-2 text-navy-600">
+                            <i data-lucide="map-pin" class="w-5 h-5"></i>
+                            <span>${previewData.region} - ${previewData.location}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-navy-600">
+                            <i data-lucide="banknote" class="w-5 h-5"></i>
+                            <span>年収: ${previewData.salary}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-navy-600">
+                            <i data-lucide="briefcase" class="w-5 h-5"></i>
+                            <span>${previewData.workType}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t pt-4 mb-4">
+                        <h4 class="font-semibold text-navy-900 mb-2">仕事内容</h4>
+                        <p class="text-navy-700 whitespace-pre-wrap">${previewData.detail}</p>
+                    </div>
+                    
+                    <div class="border-t pt-4">
+                        <h4 class="font-semibold text-navy-900 mb-2">必要な資格・経験</h4>
+                        <p class="text-navy-700 whitespace-pre-wrap">${previewData.requirement}</p>
+                    </div>
+                </div>
             `;
-            preview.style.display = 'block';
+            
+            // モーダルを作成
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-navy-900">求人プレビュー</h2>
+                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    ${previewContent}
+                    <div class="mt-6 text-center">
+                        <button onclick="this.closest('.fixed').remove()" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-blue-600 transition-all shadow-lg hover:shadow-xl font-medium">
+                            閉じる
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Lucideアイコンを再初期化
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
         },
 
         async handleJobSubmit(e) {
             const form = e.target;
+            const formData = new FormData(form);
             const successMessage = document.getElementById('success-message');
             const errorMessage = document.getElementById('error-message');
+            
+            // メッセージを非表示にする
+            if (successMessage) successMessage.classList.add('hidden');
+            if (errorMessage) errorMessage.classList.add('hidden');
 
-            if (!this.validateJobForm()) return;
-
-            const get = id => {
-                const element = document.getElementById(id);
-                return element ? element.value.trim() : '';
-            };
-
+            // フォームデータを取得
             const jobData = {
-                '企業名': get('company'),
-                '職種': get('position'),
-                '地域': get('region'),
-                '勤務地': get('location'),
-                '年収': Number(get('salary')),
-                '応募ステータス': get('status')
+                company: formData.get('company'),
+                email: formData.get('email'),
+                position: formData.get('position'),
+                region: formData.get('region'),
+                location: formData.get('location'),
+                salary: formData.get('salary') || '',
+                workType: formData.get('workType') || '',
+                detail: formData.get('detail') || '',
+                requirement: formData.get('requirement') || ''
             };
-
+            
+            // デバッグログ
+            console.log('Submitting job data:', jobData);
+            
             try {
-                await ShipHubJobs.postJob(jobData);
-                if (successMessage) successMessage.style.display = 'block';
-                form.reset();
+                const result = await ShipHubJobs.postJob(jobData);
+                
+                if (result.success) {
+                    // 成功メッセージを表示
+                    if (successMessage) {
+                        successMessage.classList.remove('hidden');
+                        successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                    
+                    // フォームをリセット
+                    form.reset();
+                    
+                    // 求人管理リストを更新
+                    const currentUser = ShipHubAuth.getCurrentUser();
+                    if (currentUser && currentUser.companyName) {
+                        this.loadCompanyJobs(currentUser.companyName);
+                    }
+                } else {
+                    throw new Error('Unexpected response format');
+                }
             } catch (error) {
+                console.error('Job posting error:', error);
+                
                 if (errorMessage) {
-                    errorMessage.textContent = 'エラーが発生しました。もう一度お試しください。';
-                    errorMessage.style.display = 'block';
+                    errorMessage.classList.remove('hidden');
+                    
+                    // エラーメッセージを更新
+                    const errorSpan = errorMessage.querySelector('span');
+                    if (errorSpan) {
+                        errorSpan.textContent = ShipHubJobs.getJobPostErrorMessage(error.message || 'Unknown error');
+                    }
+                    
+                    // エラーメッセージまでスクロール
+                    errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
             }
+        },
+
+        // 企業データ管理初期化
+        initCompanyDataManagement() {
+            // 現在ログイン中の企業情報を取得
+            const currentUser = ShipHubAuth.getCurrentUser();
+            if (currentUser && currentUser.userType === '企業') {
+                const companyName = currentUser.companyName;
+                if (companyName) {
+                    // 求人管理データを読み込み
+                    this.loadCompanyJobs(companyName);
+                    // 応募者管理データを読み込み
+                    this.loadCompanyApplications(companyName);
+                }
+            }
+        },
+
+        // 企業の求人データを読み込み
+        async loadCompanyJobs(companyName) {
+            const jobsLoading = document.getElementById('jobs-loading');
+            const jobsList = document.getElementById('jobs-list');
+            const jobsEmpty = document.getElementById('jobs-empty');
+            const jobsError = document.getElementById('jobs-error');
+
+            if (!jobsList) return; // 求人管理ページが存在しない場合は何もしない
+
+            try {
+                // ローディング表示
+                if (jobsLoading) jobsLoading.classList.remove('hidden');
+                if (jobsList) jobsList.classList.add('hidden');
+                if (jobsEmpty) jobsEmpty.classList.add('hidden');
+                if (jobsError) jobsError.classList.add('hidden');
+
+                const jobs = await ShipHubData.getCompanyJobs(companyName);
+
+                // ローディング非表示
+                if (jobsLoading) jobsLoading.classList.add('hidden');
+
+                if (jobs.length === 0) {
+                    // 空の状態表示
+                    if (jobsEmpty) jobsEmpty.classList.remove('hidden');
+                } else {
+                    // 求人リスト表示
+                    if (jobsList) {
+                        jobsList.innerHTML = jobs.map(job => this.createCompanyJobCard(job)).join('');
+                        jobsList.classList.remove('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading company jobs:', error);
+                // ローディング非表示、エラー表示
+                if (jobsLoading) jobsLoading.classList.add('hidden');
+                if (jobsError) jobsError.classList.remove('hidden');
+            }
+        },
+
+        // 企業の応募者データを読み込み
+        async loadCompanyApplications(companyName) {
+            const applicantsLoading = document.getElementById('applicants-loading');
+            const applicantsList = document.getElementById('applicants-list');
+            const applicantsEmpty = document.getElementById('applicants-empty');
+            const applicantsError = document.getElementById('applicants-error');
+
+            if (!applicantsList) return; // 応募者管理ページが存在しない場合は何もしない
+
+            try {
+                // ローディング表示
+                if (applicantsLoading) applicantsLoading.classList.remove('hidden');
+                if (applicantsList) applicantsList.classList.add('hidden');
+                if (applicantsEmpty) applicantsEmpty.classList.add('hidden');
+                if (applicantsError) applicantsError.classList.add('hidden');
+
+                const applications = await ShipHubData.getCompanyApplications(companyName);
+
+                // ローディング非表示
+                if (applicantsLoading) applicantsLoading.classList.add('hidden');
+
+                if (applications.length === 0) {
+                    // 空の状態表示
+                    if (applicantsEmpty) applicantsEmpty.classList.remove('hidden');
+                } else {
+                    // 応募者リスト表示
+                    if (applicantsList) {
+                        applicantsList.innerHTML = applications.map(app => this.createCompanyApplicationCard(app)).join('');
+                        applicantsList.classList.remove('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading company applications:', error);
+                // ローディング非表示、エラー表示
+                if (applicantsLoading) applicantsLoading.classList.add('hidden');
+                if (applicantsError) applicantsError.classList.remove('hidden');
+            }
+        },
+
+        // 企業求人カード生成
+        createCompanyJobCard(job) {
+            const salaryText = job.salary ? `${job.salary}万円` : '要相談';
+            return `
+                <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <h4 class="text-lg font-bold text-navy-900 mb-2">${job.position}</h4>
+                            <div class="space-y-2">
+                                <div class="flex items-center text-sm text-navy-600">
+                                    <i data-lucide="map-pin" class="w-4 h-4 mr-2"></i>
+                                    <span>${job.region} - ${job.location}</span>
+                                </div>
+                                <div class="flex items-center text-sm text-navy-600">
+                                    <i data-lucide="banknote" class="w-4 h-4 mr-2"></i>
+                                    <span>年収: ${salaryText}</span>
+                                </div>
+                                <div class="flex items-center text-sm text-navy-600">
+                                    <i data-lucide="briefcase" class="w-4 h-4 mr-2"></i>
+                                    <span>${job.workType}</span>
+                                </div>
+                                <div class="flex items-center text-sm text-navy-600">
+                                    <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
+                                    <span>投稿日: ${job.createdDate}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                                ${job.status}
+                            </span>
+                            <div class="text-sm text-navy-600">
+                                <div>閲覧数: ${job.viewCount}</div>
+                                <div>応募数: ${job.applicantCount}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        },
+
+        // 企業応募者カード生成
+        createCompanyApplicationCard(application) {
+            return `
+                <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <h4 class="text-lg font-bold text-navy-900">${application.name}</h4>
+                                    <p class="text-navy-600">${application.email}</p>
+                                </div>
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                                    ${application.status}
+                                </span>
+                            </div>
+                            
+                            <div class="space-y-2 mb-3">
+                                <div class="flex items-center text-sm text-navy-600">
+                                    <i data-lucide="briefcase" class="w-4 h-4 mr-2"></i>
+                                    <span>応募職種: ${application.position}</span>
+                                </div>
+                                <div class="flex items-center text-sm text-navy-600">
+                                    <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
+                                    <span>応募日: ${application.applicationDate}</span>
+                                </div>
+                            </div>
+                            
+                            ${application.message ? `
+                                <div class="bg-gray-50 rounded-lg p-3">
+                                    <p class="text-sm text-navy-700 font-medium mb-1">自己紹介:</p>
+                                    <p class="text-sm text-navy-600">${application.message}</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
+                                承認
+                            </button>
+                            <button class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm">
+                                保留
+                            </button>
+                            <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
+                                却下
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
         },
 
         // 認証フォーム初期化

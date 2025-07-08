@@ -13,7 +13,8 @@
       "Bash(do sed -i 's|<script src=\"\"https://cdn.tailwindcss.com\"\"></script>|<link rel=\"\"stylesheet\"\" href=\"\"tailwind.min.css\"\">|g' \"$file\")",
       "Bash(done)",
       "Bash(npx:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(node:*)"
     ],
     "deny": []
   }
